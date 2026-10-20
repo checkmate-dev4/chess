@@ -1,0 +1,2815 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Learn Chess: Step by Step for Beginners</title><meta name="description" content="Learn the basics of chess: the board, the pieces, special moves and checkmate. Then take a quiz and play the computer with a coach."><meta name="theme-color" content="#1d5c55"><meta property="og:type" content="website"><meta property="og:title" content="Learn Chess"><meta property="og:description" content="Learn chess with short lessons, a quiz, and a coach who explains every move."><meta property="og:image" content="https://YOUR-USERNAME.github.io/YOUR-REPO/thumbnail.png"><meta property="og:image:width" content="1000"><meta property="og:image:height" content="1500"><meta name="twitter:card" content="summary_large_image"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  /* Layout: one narrow column. Tabs on top switch between five short lessons, each built around a board you can look at or tap. */
+  :root {
+    --bg: #f2f4f3;
+    --surface: #ffffff;
+    --fg: #16222b;
+    --muted: #566471;
+    --line: #d9e0de;
+    --accent: #1d5c55;
+    --accent-ink: #ffffff;
+    --sq-light: #e8eeec;
+    --sq-dark: #5b8a84;
+    --hint: #e0a526;
+    --warn: #8f6200;
+    --bad: #c93f36;
+    --good: #1b7f55;
+    --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+    --font-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1618; --surface: #172123; --fg: #e8efed; --muted: #9bacaa; --line: #26353a;
+      --accent: #6fc7b9; --accent-ink: #08201c; --sq-light: #cfdad7; --sq-dark: #4f7f79;
+      --hint: #f0bb43; --warn: #f0bb43; --bad: #ef6a60; --good: #4fcf94;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1618; --surface: #172123; --fg: #e8efed; --muted: #9bacaa; --line: #26353a;
+    --accent: #6fc7b9; --accent-ink: #08201c; --sq-light: #cfdad7; --sq-dark: #4f7f79;
+    --hint: #f0bb43; --warn: #f0bb43; --bad: #ef6a60; --good: #4fcf94;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    padding-block: 24px 40px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  [hidden] { display: none !important; }
+  main { max-width: 520px; margin: 0 auto; display: grid; gap: 18px; }
+  h1 { font-family: var(--font-display); font-size: 2rem; line-height: 1.1; margin: 0; text-wrap: balance; }
+  h2 { font-family: var(--font-display); font-size: 1.25rem; margin: 0 0 6px; text-wrap: balance; }
+  p { margin: 0 0 10px; }
+  .sub { color: var(--muted); margin: 6px 0 0; }
+
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tab {
+    font: 700 0.9rem var(--font-body);
+    color: var(--fg);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+  .tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .tab:focus-visible, .pick:focus-visible, .opt:focus-visible, .btn:focus-visible { outline: 3px solid var(--hint); outline-offset: 2px; }
+
+  .panel { display: grid; gap: 14px; min-width: 0; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-rows: repeat(8, minmax(0, 1fr));
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--sq-dark);
+    user-select: none;
+  }
+  .sq { position: relative; display: grid; place-items: center; min-width: 0; min-height: 0; overflow: hidden; }
+  .sq.l { background: var(--sq-light); }
+  .sq.d { background: var(--sq-dark); }
+  .sq .co { position: absolute; font-size: 0.6rem; font-weight: 700; line-height: 1; opacity: 0.8; }
+  .sq .rk { top: 3px; left: 3px; }
+  .sq .fl { bottom: 3px; right: 3px; }
+  .sq.l .co { color: var(--sq-dark); }
+  .sq.d .co { color: var(--sq-light); }
+  .sq.tap { cursor: pointer; }
+  .sq.dot::after { content: ""; width: 28%; height: 28%; border-radius: 50%; background: var(--hint); opacity: 0.95; }
+  .sq.ring::after { content: ""; position: absolute; inset: 8%; border-radius: 50%; border: 4px solid var(--hint); }
+  .sq.mate { background: var(--bad); }
+  .sq.here { box-shadow: inset 0 0 0 3px var(--accent); }
+  .sq.last::before { content: ""; position: absolute; inset: 0; background: var(--hint); opacity: 0.38; }
+  .sq.hintsq { box-shadow: inset 0 0 0 4px var(--good); }
+
+  .status { font-weight: 700; margin: 0; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn.alt { background: var(--surface); color: var(--fg); border: 1px solid var(--line); }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+  .log { display: grid; gap: 10px; }
+  .entry { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+  .entry h3 { font-family: var(--font-display); font-size: 1rem; margin: 0 0 6px; }
+  .entry h3.good { color: var(--good); }
+  .entry h3.warn { color: var(--hint); }
+  .entry h3.bad { color: var(--bad); }
+  .entry h3.hint { color: var(--accent); }
+  .entry h3.info { color: var(--muted); }
+
+  .pc {
+    font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", "Apple Symbols", "DejaVu Sans", serif;
+    font-size: clamp(1.6rem, 9vw, 2.7rem);
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+  }
+  .pc.w { color: #ffffff; text-shadow: 0 0 2px #111, 0 0 2px #111, 0 1px 1px #111; }
+  .pc.b { color: #13161c; text-shadow: 0 0 1px rgba(255,255,255,0.35); }
+
+  .picks { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pick {
+    font: 700 0.9rem var(--font-body);
+    color: var(--fg);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  .pick[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+  .legend { color: var(--muted); font-size: 0.9rem; margin: 0; }
+  ul.clean { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  .val { display: inline-block; font-weight: 700; color: var(--accent); }
+
+  .qtext { font-weight: 700; margin-bottom: 10px; }
+  .opts { display: grid; gap: 8px; }
+  .opt {
+    text-align: left;
+    font: 600 1rem var(--font-body);
+    color: var(--fg);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 11px 14px;
+    cursor: pointer;
+  }
+  .opt.ok { border-color: var(--good); background: var(--surface); box-shadow: inset 0 0 0 2px var(--good); }
+  .opt.no { border-color: var(--bad); background: var(--surface); box-shadow: inset 0 0 0 2px var(--bad); }
+  .fb { margin: 10px 0 0; min-height: 1.5em; }
+  .btn {
+    font: 700 0.95rem var(--font-body);
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: 0;
+    border-radius: 10px;
+    padding: 11px 18px;
+    cursor: pointer;
+  }
+  .progress { color: var(--muted); font-size: 0.85rem; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+
+  /* Polish layer */
+  main { max-width: 560px; }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 10; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .logo { flex: none; width: 54px; height: 54px; border-radius: 15px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font: 2.1rem/1 "Segoe UI Symbol", "Noto Sans Symbols 2", "Apple Symbols", serif; }
+  h1 { font-size: 1.8rem; letter-spacing: -0.01em; }
+  .sub { max-width: 60ch; margin-top: 12px; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding: 8px 0; scroll-snap-type: x proximity; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { flex: none; white-space: nowrap; scroll-snap-align: center; transition: background-color .15s, color .15s; }
+  .tab:hover:not([aria-selected="true"]) { background: var(--bg); }
+  .panel:not([hidden]) { animation: panelin .2s ease-out; }
+  @keyframes panelin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .card, .entry { border-radius: 14px; box-shadow: 0 1px 2px rgba(15, 40, 38, 0.06); }
+  .board { border: 0; border-radius: 12px; box-shadow: 0 0 0 1px var(--line), 0 8px 22px rgba(15, 40, 38, 0.14); }
+  .sq.tap:hover { filter: brightness(1.07); }
+  .pc { font-size: clamp(1.8rem, 9.5vw, 3.1rem); }
+  .status { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+  .btn { transition: filter .15s, transform .1s; }
+  .btn:hover:not(:disabled) { filter: brightness(1.1); }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn.alt:hover:not(:disabled) { background: var(--bg); filter: none; }
+  .entry { border-left: 4px solid var(--line); }
+  .entry:has(h3.good) { border-left-color: var(--good); }
+  .entry:has(h3.warn) { border-left-color: var(--hint); }
+  .entry:has(h3.bad) { border-left-color: var(--bad); }
+  .entry:has(h3.hint) { border-left-color: var(--accent); }
+  .entry h3.warn { color: var(--warn); }
+  .bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin-bottom: 14px; }
+  .bar i { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .25s; }
+  .foot { color: var(--muted); font-size: 0.85rem; text-align: center; margin: 6px 0 0; text-wrap: balance; }
+  .sq, .tab, .btn, .pick, .opt { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
+  .col { display: grid; gap: 14px; min-width: 0; }
+  .tab { min-height: 44px; padding: 10px 16px; }
+  .btn, .pick { min-height: 44px; }
+  .opt { min-height: 48px; }
+  .row .btn { flex: 1 1 auto; }
+  @media (max-width: 420px) {
+    body { padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); }
+    h1 { font-size: 1.5rem; }
+    .logo { width: 46px; height: 46px; font-size: 1.8rem; border-radius: 13px; }
+    .sub { font-size: 0.95rem; }
+    .card { padding: 12px 14px; }
+    #hintBtn { flex-basis: 100%; }
+  }
+  @media (min-width: 900px) {
+    main { max-width: 1000px; }
+    .row .btn { flex: 0 0 auto; }
+    #p-board, #p-play, #p-mate, #p-pieces { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 18px 28px; }
+    #p-special { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
+    #p-pieces .picks { grid-column: 1 / -1; }
+    #p-pieces .board { grid-column: 1; grid-row: 2 / span 2; }
+    #p-pieces .legend { grid-column: 2; grid-row: 2; }
+    #p-pieces #pinfo { grid-column: 2; grid-row: 3; }
+    #p-mate .board { grid-column: 1; grid-row: 1 / span 3; }
+    #p-mate .legend, #p-mate .card { grid-column: 2; }
+    #p-quiz { max-width: 640px; width: 100%; margin: 0 auto; }
+  }
+  .setup { display: grid; gap: 12px; }
+  .setrow { display: grid; gap: 6px; }
+  .lbl { font-weight: 700; font-size: 0.9rem; color: var(--muted); }
+  .status.over { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  #promo { border-color: var(--hint); }
+  #playNow { min-height: 48px; padding: 12px 22px; font-size: 1rem; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+  .lang { display: flex; gap: 6px; justify-content: flex-end; margin-bottom: 10px; }
+  .lg { font: 700 0.8rem var(--font-body); color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+  .lg[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .lg:focus-visible { outline: 3px solid var(--hint); outline-offset: 2px; }
+</style>
+
+<main>
+  <header>
+    <div class="lang" role="group" aria-label="Language" data-ia="lang_label"><button class="lg" type="button" data-lang="en" aria-pressed="true">English</button><button class="lg" type="button" data-lang="ur" aria-pressed="false">Roman Urdu</button></div>
+    <div class="brand"><div class="logo" aria-hidden="true">&#9822;&#xFE0E;</div><h1 data-i="h1">Learn Chess</h1></div>
+    <p class="sub" data-i="sub"></p>
+    <p><button class="btn" id="playNow" type="button" data-i="play_now"></button></p>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Lessons" data-ia="tabs_aria">
+    <button class="tab" role="tab" data-tab="board" aria-selected="true" data-i="tab_board"></button>
+    <button class="tab" role="tab" data-tab="pieces" aria-selected="false" data-i="tab_pieces"></button>
+    <button class="tab" role="tab" data-tab="special" aria-selected="false" data-i="tab_special"></button>
+    <button class="tab" role="tab" data-tab="mate" aria-selected="false" data-i="tab_mate"></button>
+    <button class="tab" role="tab" data-tab="quiz" aria-selected="false" data-i="tab_quiz"></button>
+    <button class="tab" role="tab" data-tab="play" aria-selected="false" data-i="tab_play"></button>
+  </div>
+
+  <section class="panel" role="tabpanel" id="p-board">
+    <div class="board" id="b-start" role="img" aria-label="Chess board in the starting position" data-ia="b_aria"></div>
+    <div class="card">
+      <h2 data-i="b_h2"></h2>
+      <ul class="clean">
+        <li data-ih="b_l1"></li>
+        <li data-ih="b_l2"></li>
+        <li data-ih="b_l3"></li>
+        <li data-ih="b_l4"></li>
+        <li data-ih="b_l5"></li>
+        <li data-ih="b_l6"></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel" role="tabpanel" id="p-pieces" hidden>
+    <div class="picks" id="picks" role="group" aria-label="Choose a piece" data-ia="pick_aria"></div>
+    <div class="board" id="b-moves" aria-label="Board showing where the chosen piece can move" data-ia="moves_aria"></div>
+    <p class="legend" data-i="p_legend"></p>
+    <div class="card" id="pinfo"></div>
+  </section>
+
+  <section class="panel" role="tabpanel" id="p-special" hidden>
+    <div class="card">
+      <h2 data-i="sp_cast_h"></h2>
+      <p data-i="sp_cast_p"></p>
+      <ul class="clean">
+        <li data-i="sp_cast_l1"></li>
+        <li data-i="sp_cast_l2"></li>
+        <li data-i="sp_cast_l3"></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2 data-i="sp_prom_h"></h2>
+      <p data-i="sp_prom_p"></p>
+    </div>
+    <div class="card">
+      <h2 data-i="sp_ep_h"></h2>
+      <p data-ih="sp_ep_p"></p>
+    </div>
+  </section>
+
+  <section class="panel" role="tabpanel" id="p-mate" hidden>
+    <div class="board" id="b-mate" role="img" aria-label="Back rank checkmate" data-ia="m_aria"></div>
+    <p class="legend" data-ih="m_legend"></p>
+    <div class="card">
+      <h2 data-i="m_h"></h2>
+      <ul class="clean">
+        <li data-ih="m_l1"></li>
+        <li data-i="m_l2"></li>
+        <li data-ih="m_l3"></li>
+        <li data-ih="m_l4"></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2 data-i="o_h"></h2>
+      <ul class="clean">
+        <li data-i="o_l1"></li>
+        <li data-i="o_l2"></li>
+        <li data-i="o_l3"></li>
+        <li data-i="o_l4"></li>
+        <li data-i="o_l5"></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel" role="tabpanel" id="p-play" hidden>
+    <div class="col">
+    <div class="card setup">
+      <div class="setrow"><span class="lbl" data-i="pl_as"></span><div class="picks" id="sideP" role="group" aria-label="Play as" data-ia="pl_as"><button class="pick" type="button" data-v="w" aria-pressed="true" data-i="side_w"></button><button class="pick" type="button" data-v="b" aria-pressed="false" data-i="side_b"></button><button class="pick" type="button" data-v="2" aria-pressed="false" data-i="two"></button></div></div>
+      <div class="setrow"><span class="lbl" data-i="pl_lvl"></span><div class="picks" id="lvlP" role="group" aria-label="Computer level" data-ia="pl_lvl"><button class="pick" type="button" data-v="1" aria-pressed="false" data-i="lv_1"></button><button class="pick" type="button" data-v="2" aria-pressed="true" data-i="lv_2"></button><button class="pick" type="button" data-v="3" aria-pressed="false" data-i="lv_3"></button></div></div>
+    </div>
+    <p class="status" id="pstatus" aria-live="polite"></p>
+    <div class="board" id="b-play" aria-label="Playable chess board" data-ia="board_aria"></div>
+    <div class="card" id="promo" hidden><p class="qtext" data-i="promo_q"></p><div class="picks" id="promoPicks"></div></div>
+    <div class="row">
+      <button class="btn" id="hintBtn" type="button" data-i="btn_hint"></button>
+      <button class="btn alt" id="undoBtn" type="button" data-i="btn_undo"></button>
+      <button class="btn alt" id="flipBtn" type="button" data-i="btn_flip"></button>
+      <button class="btn alt" id="newBtn" type="button" data-i="btn_new"></button>
+    </div>
+    </div>
+    <div class="col">
+    <p class="legend" data-i="pl_legend"></p>
+    <div class="card"><h2 data-i="moves_h"></h2><p class="legend" id="movelist"></p></div>
+    <div class="log" id="coachlog"></div>
+    </div>
+  </section>
+
+  <section class="panel" role="tabpanel" id="p-quiz" hidden>
+    <div class="card" id="quiz"></div>
+  </section>
+  <p class="foot" data-i="foot"></p>
+</main>
+
+<script>
+/*
+ * Copyright (c) 2020, Jeff Hlywa (jhlywa@gmail.com)
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ *----------------------------------------------------------------------------*/
+
+/* minified license below  */
+
+/* @license
+ * Copyright (c) 2018, Jeff Hlywa (jhlywa@gmail.com)
+ * Released under the BSD license
+ * https://github.com/jhlywa/chess.js/blob/master/LICENSE
+ */
+
+var Chess = function(fen) {
+  var BLACK = 'b'
+  var WHITE = 'w'
+
+  var EMPTY = -1
+
+  var PAWN = 'p'
+  var KNIGHT = 'n'
+  var BISHOP = 'b'
+  var ROOK = 'r'
+  var QUEEN = 'q'
+  var KING = 'k'
+
+  var SYMBOLS = 'pnbrqkPNBRQK'
+
+  var DEFAULT_POSITION =
+    'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+
+  var POSSIBLE_RESULTS = ['1-0', '0-1', '1/2-1/2', '*']
+
+  var PAWN_OFFSETS = {
+    b: [16, 32, 17, 15],
+    w: [-16, -32, -17, -15]
+  }
+
+  var PIECE_OFFSETS = {
+    n: [-18, -33, -31, -14, 18, 33, 31, 14],
+    b: [-17, -15, 17, 15],
+    r: [-16, 1, 16, -1],
+    q: [-17, -16, -15, 1, 17, 16, 15, -1],
+    k: [-17, -16, -15, 1, 17, 16, 15, -1]
+  }
+
+  // prettier-ignore
+  var ATTACKS = [
+    20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20, 0,
+     0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
+     0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
+     0, 0, 0,20, 0, 0, 0, 24,  0, 0, 0,20, 0, 0, 0, 0,
+     0, 0, 0, 0,20, 0, 0, 24,  0, 0,20, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0,20, 2, 24,  2,20, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 2,53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
+    24,24,24,24,24,24,56,  0, 56,24,24,24,24,24,24, 0,
+     0, 0, 0, 0, 0, 2,53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0,20, 2, 24,  2,20, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0,20, 0, 0, 24,  0, 0,20, 0, 0, 0, 0, 0,
+     0, 0, 0,20, 0, 0, 0, 24,  0, 0, 0,20, 0, 0, 0, 0,
+     0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
+     0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
+    20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20
+  ];
+
+  // prettier-ignore
+  var RAYS = [
+     17,  0,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0,  0, 15, 0,
+      0, 17,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0, 15,  0, 0,
+      0,  0, 17,  0,  0,  0,  0, 16,  0,  0,  0,  0, 15,  0,  0, 0,
+      0,  0,  0, 17,  0,  0,  0, 16,  0,  0,  0, 15,  0,  0,  0, 0,
+      0,  0,  0,  0, 17,  0,  0, 16,  0,  0, 15,  0,  0,  0,  0, 0,
+      0,  0,  0,  0,  0, 17,  0, 16,  0, 15,  0,  0,  0,  0,  0, 0,
+      0,  0,  0,  0,  0,  0, 17, 16, 15,  0,  0,  0,  0,  0,  0, 0,
+      1,  1,  1,  1,  1,  1,  1,  0, -1, -1,  -1,-1, -1, -1, -1, 0,
+      0,  0,  0,  0,  0,  0,-15,-16,-17,  0,  0,  0,  0,  0,  0, 0,
+      0,  0,  0,  0,  0,-15,  0,-16,  0,-17,  0,  0,  0,  0,  0, 0,
+      0,  0,  0,  0,-15,  0,  0,-16,  0,  0,-17,  0,  0,  0,  0, 0,
+      0,  0,  0,-15,  0,  0,  0,-16,  0,  0,  0,-17,  0,  0,  0, 0,
+      0,  0,-15,  0,  0,  0,  0,-16,  0,  0,  0,  0,-17,  0,  0, 0,
+      0,-15,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,-17,  0, 0,
+    -15,  0,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,  0,-17
+  ];
+
+  var SHIFTS = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5 }
+
+  var FLAGS = {
+    NORMAL: 'n',
+    CAPTURE: 'c',
+    BIG_PAWN: 'b',
+    EP_CAPTURE: 'e',
+    PROMOTION: 'p',
+    KSIDE_CASTLE: 'k',
+    QSIDE_CASTLE: 'q'
+  }
+
+  var BITS = {
+    NORMAL: 1,
+    CAPTURE: 2,
+    BIG_PAWN: 4,
+    EP_CAPTURE: 8,
+    PROMOTION: 16,
+    KSIDE_CASTLE: 32,
+    QSIDE_CASTLE: 64
+  }
+
+  var RANK_1 = 7
+  var RANK_2 = 6
+  var RANK_3 = 5
+  var RANK_4 = 4
+  var RANK_5 = 3
+  var RANK_6 = 2
+  var RANK_7 = 1
+  var RANK_8 = 0
+
+  // prettier-ignore
+  var SQUARES = {
+    a8:   0, b8:   1, c8:   2, d8:   3, e8:   4, f8:   5, g8:   6, h8:   7,
+    a7:  16, b7:  17, c7:  18, d7:  19, e7:  20, f7:  21, g7:  22, h7:  23,
+    a6:  32, b6:  33, c6:  34, d6:  35, e6:  36, f6:  37, g6:  38, h6:  39,
+    a5:  48, b5:  49, c5:  50, d5:  51, e5:  52, f5:  53, g5:  54, h5:  55,
+    a4:  64, b4:  65, c4:  66, d4:  67, e4:  68, f4:  69, g4:  70, h4:  71,
+    a3:  80, b3:  81, c3:  82, d3:  83, e3:  84, f3:  85, g3:  86, h3:  87,
+    a2:  96, b2:  97, c2:  98, d2:  99, e2: 100, f2: 101, g2: 102, h2: 103,
+    a1: 112, b1: 113, c1: 114, d1: 115, e1: 116, f1: 117, g1: 118, h1: 119
+  };
+
+  var ROOKS = {
+    w: [
+      { square: SQUARES.a1, flag: BITS.QSIDE_CASTLE },
+      { square: SQUARES.h1, flag: BITS.KSIDE_CASTLE }
+    ],
+    b: [
+      { square: SQUARES.a8, flag: BITS.QSIDE_CASTLE },
+      { square: SQUARES.h8, flag: BITS.KSIDE_CASTLE }
+    ]
+  }
+
+  var board = new Array(128)
+  var kings = { w: EMPTY, b: EMPTY }
+  var turn = WHITE
+  var castling = { w: 0, b: 0 }
+  var ep_square = EMPTY
+  var half_moves = 0
+  var move_number = 1
+  var history = []
+  var header = {}
+
+  /* if the user passes in a fen string, load it, else default to
+   * starting position
+   */
+  if (typeof fen === 'undefined') {
+    load(DEFAULT_POSITION)
+  } else {
+    load(fen)
+  }
+
+  function clear(keep_headers) {
+    if (typeof keep_headers === 'undefined') {
+      keep_headers = false
+    }
+
+    board = new Array(128)
+    kings = { w: EMPTY, b: EMPTY }
+    turn = WHITE
+    castling = { w: 0, b: 0 }
+    ep_square = EMPTY
+    half_moves = 0
+    move_number = 1
+    history = []
+    if (!keep_headers) header = {}
+    update_setup(generate_fen())
+  }
+
+  function reset() {
+    load(DEFAULT_POSITION)
+  }
+
+  function load(fen, keep_headers) {
+    if (typeof keep_headers === 'undefined') {
+      keep_headers = false
+    }
+
+    var tokens = fen.split(/\s+/)
+    var position = tokens[0]
+    var square = 0
+
+    if (!validate_fen(fen).valid) {
+      return false
+    }
+
+    clear(keep_headers)
+
+    for (var i = 0; i < position.length; i++) {
+      var piece = position.charAt(i)
+
+      if (piece === '/') {
+        square += 8
+      } else if (is_digit(piece)) {
+        square += parseInt(piece, 10)
+      } else {
+        var color = piece < 'a' ? WHITE : BLACK
+        put({ type: piece.toLowerCase(), color: color }, algebraic(square))
+        square++
+      }
+    }
+
+    turn = tokens[1]
+
+    if (tokens[2].indexOf('K') > -1) {
+      castling.w |= BITS.KSIDE_CASTLE
+    }
+    if (tokens[2].indexOf('Q') > -1) {
+      castling.w |= BITS.QSIDE_CASTLE
+    }
+    if (tokens[2].indexOf('k') > -1) {
+      castling.b |= BITS.KSIDE_CASTLE
+    }
+    if (tokens[2].indexOf('q') > -1) {
+      castling.b |= BITS.QSIDE_CASTLE
+    }
+
+    ep_square = tokens[3] === '-' ? EMPTY : SQUARES[tokens[3]]
+    half_moves = parseInt(tokens[4], 10)
+    move_number = parseInt(tokens[5], 10)
+
+    update_setup(generate_fen())
+
+    return true
+  }
+
+  /* TODO: this function is pretty much crap - it validates structure but
+   * completely ignores content (e.g. doesn't verify that each side has a king)
+   * ... we should rewrite this, and ditch the silly error_number field while
+   * we're at it
+   */
+  function validate_fen(fen) {
+    var errors = {
+      0: 'No errors.',
+      1: 'FEN string must contain six space-delimited fields.',
+      2: '6th field (move number) must be a positive integer.',
+      3: '5th field (half move counter) must be a non-negative integer.',
+      4: '4th field (en-passant square) is invalid.',
+      5: '3rd field (castling availability) is invalid.',
+      6: '2nd field (side to move) is invalid.',
+      7: "1st field (piece positions) does not contain 8 '/'-delimited rows.",
+      8: '1st field (piece positions) is invalid [consecutive numbers].',
+      9: '1st field (piece positions) is invalid [invalid piece].',
+      10: '1st field (piece positions) is invalid [row too large].',
+      11: 'Illegal en-passant square'
+    }
+
+    /* 1st criterion: 6 space-seperated fields? */
+    var tokens = fen.split(/\s+/)
+    if (tokens.length !== 6) {
+      return { valid: false, error_number: 1, error: errors[1] }
+    }
+
+    /* 2nd criterion: move number field is a integer value > 0? */
+    if (isNaN(tokens[5]) || parseInt(tokens[5], 10) <= 0) {
+      return { valid: false, error_number: 2, error: errors[2] }
+    }
+
+    /* 3rd criterion: half move counter is an integer >= 0? */
+    if (isNaN(tokens[4]) || parseInt(tokens[4], 10) < 0) {
+      return { valid: false, error_number: 3, error: errors[3] }
+    }
+
+    /* 4th criterion: 4th field is a valid e.p.-string? */
+    if (!/^(-|[abcdefgh][36])$/.test(tokens[3])) {
+      return { valid: false, error_number: 4, error: errors[4] }
+    }
+
+    /* 5th criterion: 3th field is a valid castle-string? */
+    if (!/^(KQ?k?q?|Qk?q?|kq?|q|-)$/.test(tokens[2])) {
+      return { valid: false, error_number: 5, error: errors[5] }
+    }
+
+    /* 6th criterion: 2nd field is "w" (white) or "b" (black)? */
+    if (!/^(w|b)$/.test(tokens[1])) {
+      return { valid: false, error_number: 6, error: errors[6] }
+    }
+
+    /* 7th criterion: 1st field contains 8 rows? */
+    var rows = tokens[0].split('/')
+    if (rows.length !== 8) {
+      return { valid: false, error_number: 7, error: errors[7] }
+    }
+
+    /* 8th criterion: every row is valid? */
+    for (var i = 0; i < rows.length; i++) {
+      /* check for right sum of fields AND not two numbers in succession */
+      var sum_fields = 0
+      var previous_was_number = false
+
+      for (var k = 0; k < rows[i].length; k++) {
+        if (!isNaN(rows[i][k])) {
+          if (previous_was_number) {
+            return { valid: false, error_number: 8, error: errors[8] }
+          }
+          sum_fields += parseInt(rows[i][k], 10)
+          previous_was_number = true
+        } else {
+          if (!/^[prnbqkPRNBQK]$/.test(rows[i][k])) {
+            return { valid: false, error_number: 9, error: errors[9] }
+          }
+          sum_fields += 1
+          previous_was_number = false
+        }
+      }
+      if (sum_fields !== 8) {
+        return { valid: false, error_number: 10, error: errors[10] }
+      }
+    }
+
+    if (
+      (tokens[3][1] == '3' && tokens[1] == 'w') ||
+      (tokens[3][1] == '6' && tokens[1] == 'b')
+    ) {
+      return { valid: false, error_number: 11, error: errors[11] }
+    }
+
+    /* everything's okay! */
+    return { valid: true, error_number: 0, error: errors[0] }
+  }
+
+  function generate_fen() {
+    var empty = 0
+    var fen = ''
+
+    for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+      if (board[i] == null) {
+        empty++
+      } else {
+        if (empty > 0) {
+          fen += empty
+          empty = 0
+        }
+        var color = board[i].color
+        var piece = board[i].type
+
+        fen += color === WHITE ? piece.toUpperCase() : piece.toLowerCase()
+      }
+
+      if ((i + 1) & 0x88) {
+        if (empty > 0) {
+          fen += empty
+        }
+
+        if (i !== SQUARES.h1) {
+          fen += '/'
+        }
+
+        empty = 0
+        i += 8
+      }
+    }
+
+    var cflags = ''
+    if (castling[WHITE] & BITS.KSIDE_CASTLE) {
+      cflags += 'K'
+    }
+    if (castling[WHITE] & BITS.QSIDE_CASTLE) {
+      cflags += 'Q'
+    }
+    if (castling[BLACK] & BITS.KSIDE_CASTLE) {
+      cflags += 'k'
+    }
+    if (castling[BLACK] & BITS.QSIDE_CASTLE) {
+      cflags += 'q'
+    }
+
+    /* do we have an empty castling flag? */
+    cflags = cflags || '-'
+    var epflags = ep_square === EMPTY ? '-' : algebraic(ep_square)
+
+    return [fen, turn, cflags, epflags, half_moves, move_number].join(' ')
+  }
+
+  function set_header(args) {
+    for (var i = 0; i < args.length; i += 2) {
+      if (typeof args[i] === 'string' && typeof args[i + 1] === 'string') {
+        header[args[i]] = args[i + 1]
+      }
+    }
+    return header
+  }
+
+  /* called when the initial board setup is changed with put() or remove().
+   * modifies the SetUp and FEN properties of the header object.  if the FEN is
+   * equal to the default position, the SetUp and FEN are deleted
+   * the setup is only updated if history.length is zero, ie moves haven't been
+   * made.
+   */
+  function update_setup(fen) {
+    if (history.length > 0) return
+
+    if (fen !== DEFAULT_POSITION) {
+      header['SetUp'] = '1'
+      header['FEN'] = fen
+    } else {
+      delete header['SetUp']
+      delete header['FEN']
+    }
+  }
+
+  function get(square) {
+    var piece = board[SQUARES[square]]
+    return piece ? { type: piece.type, color: piece.color } : null
+  }
+
+  function put(piece, square) {
+    /* check for valid piece object */
+    if (!('type' in piece && 'color' in piece)) {
+      return false
+    }
+
+    /* check for piece */
+    if (SYMBOLS.indexOf(piece.type.toLowerCase()) === -1) {
+      return false
+    }
+
+    /* check for valid square */
+    if (!(square in SQUARES)) {
+      return false
+    }
+
+    var sq = SQUARES[square]
+
+    /* don't let the user place more than one king */
+    if (
+      piece.type == KING &&
+      !(kings[piece.color] == EMPTY || kings[piece.color] == sq)
+    ) {
+      return false
+    }
+
+    board[sq] = { type: piece.type, color: piece.color }
+    if (piece.type === KING) {
+      kings[piece.color] = sq
+    }
+
+    update_setup(generate_fen())
+
+    return true
+  }
+
+  function remove(square) {
+    var piece = get(square)
+    board[SQUARES[square]] = null
+    if (piece && piece.type === KING) {
+      kings[piece.color] = EMPTY
+    }
+
+    update_setup(generate_fen())
+
+    return piece
+  }
+
+  function build_move(board, from, to, flags, promotion) {
+    var move = {
+      color: turn,
+      from: from,
+      to: to,
+      flags: flags,
+      piece: board[from].type
+    }
+
+    if (promotion) {
+      move.flags |= BITS.PROMOTION
+      move.promotion = promotion
+    }
+
+    if (board[to]) {
+      move.captured = board[to].type
+    } else if (flags & BITS.EP_CAPTURE) {
+      move.captured = PAWN
+    }
+    return move
+  }
+
+  function generate_moves(options) {
+    function add_move(board, moves, from, to, flags) {
+      /* if pawn promotion */
+      if (
+        board[from].type === PAWN &&
+        (rank(to) === RANK_8 || rank(to) === RANK_1)
+      ) {
+        var pieces = [QUEEN, ROOK, BISHOP, KNIGHT]
+        for (var i = 0, len = pieces.length; i < len; i++) {
+          moves.push(build_move(board, from, to, flags, pieces[i]))
+        }
+      } else {
+        moves.push(build_move(board, from, to, flags))
+      }
+    }
+
+    var moves = []
+    var us = turn
+    var them = swap_color(us)
+    var second_rank = { b: RANK_7, w: RANK_2 }
+
+    var first_sq = SQUARES.a8
+    var last_sq = SQUARES.h1
+    var single_square = false
+
+    /* do we want legal moves? */
+    var legal =
+      typeof options !== 'undefined' && 'legal' in options
+        ? options.legal
+        : true
+
+    /* are we generating moves for a single square? */
+    if (typeof options !== 'undefined' && 'square' in options) {
+      if (options.square in SQUARES) {
+        first_sq = last_sq = SQUARES[options.square]
+        single_square = true
+      } else {
+        /* invalid square */
+        return []
+      }
+    }
+
+    for (var i = first_sq; i <= last_sq; i++) {
+      /* did we run off the end of the board */
+      if (i & 0x88) {
+        i += 7
+        continue
+      }
+
+      var piece = board[i]
+      if (piece == null || piece.color !== us) {
+        continue
+      }
+
+      if (piece.type === PAWN) {
+        /* single square, non-capturing */
+        var square = i + PAWN_OFFSETS[us][0]
+        if (board[square] == null) {
+          add_move(board, moves, i, square, BITS.NORMAL)
+
+          /* double square */
+          var square = i + PAWN_OFFSETS[us][1]
+          if (second_rank[us] === rank(i) && board[square] == null) {
+            add_move(board, moves, i, square, BITS.BIG_PAWN)
+          }
+        }
+
+        /* pawn captures */
+        for (j = 2; j < 4; j++) {
+          var square = i + PAWN_OFFSETS[us][j]
+          if (square & 0x88) continue
+
+          if (board[square] != null && board[square].color === them) {
+            add_move(board, moves, i, square, BITS.CAPTURE)
+          } else if (square === ep_square) {
+            add_move(board, moves, i, ep_square, BITS.EP_CAPTURE)
+          }
+        }
+      } else {
+        for (var j = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
+          var offset = PIECE_OFFSETS[piece.type][j]
+          var square = i
+
+          while (true) {
+            square += offset
+            if (square & 0x88) break
+
+            if (board[square] == null) {
+              add_move(board, moves, i, square, BITS.NORMAL)
+            } else {
+              if (board[square].color === us) break
+              add_move(board, moves, i, square, BITS.CAPTURE)
+              break
+            }
+
+            /* break, if knight or king */
+            if (piece.type === 'n' || piece.type === 'k') break
+          }
+        }
+      }
+    }
+
+    /* check for castling if: a) we're generating all moves, or b) we're doing
+     * single square move generation on the king's square
+     */
+    if (!single_square || last_sq === kings[us]) {
+      /* king-side castling */
+      if (castling[us] & BITS.KSIDE_CASTLE) {
+        var castling_from = kings[us]
+        var castling_to = castling_from + 2
+
+        if (
+          board[castling_from + 1] == null &&
+          board[castling_to] == null &&
+          !attacked(them, kings[us]) &&
+          !attacked(them, castling_from + 1) &&
+          !attacked(them, castling_to)
+        ) {
+          add_move(board, moves, kings[us], castling_to, BITS.KSIDE_CASTLE)
+        }
+      }
+
+      /* queen-side castling */
+      if (castling[us] & BITS.QSIDE_CASTLE) {
+        var castling_from = kings[us]
+        var castling_to = castling_from - 2
+
+        if (
+          board[castling_from - 1] == null &&
+          board[castling_from - 2] == null &&
+          board[castling_from - 3] == null &&
+          !attacked(them, kings[us]) &&
+          !attacked(them, castling_from - 1) &&
+          !attacked(them, castling_to)
+        ) {
+          add_move(board, moves, kings[us], castling_to, BITS.QSIDE_CASTLE)
+        }
+      }
+    }
+
+    /* return all pseudo-legal moves (this includes moves that allow the king
+     * to be captured)
+     */
+    if (!legal) {
+      return moves
+    }
+
+    /* filter out illegal moves */
+    var legal_moves = []
+    for (var i = 0, len = moves.length; i < len; i++) {
+      make_move(moves[i])
+      if (!king_attacked(us)) {
+        legal_moves.push(moves[i])
+      }
+      undo_move()
+    }
+
+    return legal_moves
+  }
+
+  /* convert a move from 0x88 coordinates to Standard Algebraic Notation
+   * (SAN)
+   *
+   * @param {boolean} sloppy Use the sloppy SAN generator to work around over
+   * disambiguation bugs in Fritz and Chessbase.  See below:
+   *
+   * r1bqkbnr/ppp2ppp/2n5/1B1pP3/4P3/8/PPPP2PP/RNBQK1NR b KQkq - 2 4
+   * 4. ... Nge7 is overly disambiguated because the knight on c6 is pinned
+   * 4. ... Ne7 is technically the valid SAN
+   */
+  function move_to_san(move, sloppy) {
+    var output = ''
+
+    if (move.flags & BITS.KSIDE_CASTLE) {
+      output = 'O-O'
+    } else if (move.flags & BITS.QSIDE_CASTLE) {
+      output = 'O-O-O'
+    } else {
+      var disambiguator = get_disambiguator(move, sloppy)
+
+      if (move.piece !== PAWN) {
+        output += move.piece.toUpperCase() + disambiguator
+      }
+
+      if (move.flags & (BITS.CAPTURE | BITS.EP_CAPTURE)) {
+        if (move.piece === PAWN) {
+          output += algebraic(move.from)[0]
+        }
+        output += 'x'
+      }
+
+      output += algebraic(move.to)
+
+      if (move.flags & BITS.PROMOTION) {
+        output += '=' + move.promotion.toUpperCase()
+      }
+    }
+
+    make_move(move)
+    if (in_check()) {
+      if (in_checkmate()) {
+        output += '#'
+      } else {
+        output += '+'
+      }
+    }
+    undo_move()
+
+    return output
+  }
+
+  // parses all of the decorators out of a SAN string
+  function stripped_san(move) {
+    return move.replace(/=/, '').replace(/[+#]?[?!]*$/, '')
+  }
+
+  function attacked(color, square) {
+    for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+      /* did we run off the end of the board */
+      if (i & 0x88) {
+        i += 7
+        continue
+      }
+
+      /* if empty square or wrong color */
+      if (board[i] == null || board[i].color !== color) continue
+
+      var piece = board[i]
+      var difference = i - square
+      var index = difference + 119
+
+      if (ATTACKS[index] & (1 << SHIFTS[piece.type])) {
+        if (piece.type === PAWN) {
+          if (difference > 0) {
+            if (piece.color === WHITE) return true
+          } else {
+            if (piece.color === BLACK) return true
+          }
+          continue
+        }
+
+        /* if the piece is a knight or a king */
+        if (piece.type === 'n' || piece.type === 'k') return true
+
+        var offset = RAYS[index]
+        var j = i + offset
+
+        var blocked = false
+        while (j !== square) {
+          if (board[j] != null) {
+            blocked = true
+            break
+          }
+          j += offset
+        }
+
+        if (!blocked) return true
+      }
+    }
+
+    return false
+  }
+
+  function king_attacked(color) {
+    return attacked(swap_color(color), kings[color])
+  }
+
+  function in_check() {
+    return king_attacked(turn)
+  }
+
+  function in_checkmate() {
+    return in_check() && generate_moves().length === 0
+  }
+
+  function in_stalemate() {
+    return !in_check() && generate_moves().length === 0
+  }
+
+  function insufficient_material() {
+    var pieces = {}
+    var bishops = []
+    var num_pieces = 0
+    var sq_color = 0
+
+    for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+      sq_color = (sq_color + 1) % 2
+      if (i & 0x88) {
+        i += 7
+        continue
+      }
+
+      var piece = board[i]
+      if (piece) {
+        pieces[piece.type] = piece.type in pieces ? pieces[piece.type] + 1 : 1
+        if (piece.type === BISHOP) {
+          bishops.push(sq_color)
+        }
+        num_pieces++
+      }
+    }
+
+    /* k vs. k */
+    if (num_pieces === 2) {
+      return true
+    } else if (
+      /* k vs. kn .... or .... k vs. kb */
+      num_pieces === 3 &&
+      (pieces[BISHOP] === 1 || pieces[KNIGHT] === 1)
+    ) {
+      return true
+    } else if (num_pieces === pieces[BISHOP] + 2) {
+      /* kb vs. kb where any number of bishops are all on the same color */
+      var sum = 0
+      var len = bishops.length
+      for (var i = 0; i < len; i++) {
+        sum += bishops[i]
+      }
+      if (sum === 0 || sum === len) {
+        return true
+      }
+    }
+
+    return false
+  }
+
+  function in_threefold_repetition() {
+    /* TODO: while this function is fine for casual use, a better
+     * implementation would use a Zobrist key (instead of FEN). the
+     * Zobrist key would be maintained in the make_move/undo_move functions,
+     * avoiding the costly that we do below.
+     */
+    var moves = []
+    var positions = {}
+    var repetition = false
+
+    while (true) {
+      var move = undo_move()
+      if (!move) break
+      moves.push(move)
+    }
+
+    while (true) {
+      /* remove the last two fields in the FEN string, they're not needed
+       * when checking for draw by rep */
+      var fen = generate_fen()
+        .split(' ')
+        .slice(0, 4)
+        .join(' ')
+
+      /* has the position occurred three or move times */
+      positions[fen] = fen in positions ? positions[fen] + 1 : 1
+      if (positions[fen] >= 3) {
+        repetition = true
+      }
+
+      if (!moves.length) {
+        break
+      }
+      make_move(moves.pop())
+    }
+
+    return repetition
+  }
+
+  function push(move) {
+    history.push({
+      move: move,
+      kings: { b: kings.b, w: kings.w },
+      turn: turn,
+      castling: { b: castling.b, w: castling.w },
+      ep_square: ep_square,
+      half_moves: half_moves,
+      move_number: move_number
+    })
+  }
+
+  function make_move(move) {
+    var us = turn
+    var them = swap_color(us)
+    push(move)
+
+    board[move.to] = board[move.from]
+    board[move.from] = null
+
+    /* if ep capture, remove the captured pawn */
+    if (move.flags & BITS.EP_CAPTURE) {
+      if (turn === BLACK) {
+        board[move.to - 16] = null
+      } else {
+        board[move.to + 16] = null
+      }
+    }
+
+    /* if pawn promotion, replace with new piece */
+    if (move.flags & BITS.PROMOTION) {
+      board[move.to] = { type: move.promotion, color: us }
+    }
+
+    /* if we moved the king */
+    if (board[move.to].type === KING) {
+      kings[board[move.to].color] = move.to
+
+      /* if we castled, move the rook next to the king */
+      if (move.flags & BITS.KSIDE_CASTLE) {
+        var castling_to = move.to - 1
+        var castling_from = move.to + 1
+        board[castling_to] = board[castling_from]
+        board[castling_from] = null
+      } else if (move.flags & BITS.QSIDE_CASTLE) {
+        var castling_to = move.to + 1
+        var castling_from = move.to - 2
+        board[castling_to] = board[castling_from]
+        board[castling_from] = null
+      }
+
+      /* turn off castling */
+      castling[us] = ''
+    }
+
+    /* turn off castling if we move a rook */
+    if (castling[us]) {
+      for (var i = 0, len = ROOKS[us].length; i < len; i++) {
+        if (
+          move.from === ROOKS[us][i].square &&
+          castling[us] & ROOKS[us][i].flag
+        ) {
+          castling[us] ^= ROOKS[us][i].flag
+          break
+        }
+      }
+    }
+
+    /* turn off castling if we capture a rook */
+    if (castling[them]) {
+      for (var i = 0, len = ROOKS[them].length; i < len; i++) {
+        if (
+          move.to === ROOKS[them][i].square &&
+          castling[them] & ROOKS[them][i].flag
+        ) {
+          castling[them] ^= ROOKS[them][i].flag
+          break
+        }
+      }
+    }
+
+    /* if big pawn move, update the en passant square */
+    if (move.flags & BITS.BIG_PAWN) {
+      if (turn === 'b') {
+        ep_square = move.to - 16
+      } else {
+        ep_square = move.to + 16
+      }
+    } else {
+      ep_square = EMPTY
+    }
+
+    /* reset the 50 move counter if a pawn is moved or a piece is captured */
+    if (move.piece === PAWN) {
+      half_moves = 0
+    } else if (move.flags & (BITS.CAPTURE | BITS.EP_CAPTURE)) {
+      half_moves = 0
+    } else {
+      half_moves++
+    }
+
+    if (turn === BLACK) {
+      move_number++
+    }
+    turn = swap_color(turn)
+  }
+
+  function undo_move() {
+    var old = history.pop()
+    if (old == null) {
+      return null
+    }
+
+    var move = old.move
+    kings = old.kings
+    turn = old.turn
+    castling = old.castling
+    ep_square = old.ep_square
+    half_moves = old.half_moves
+    move_number = old.move_number
+
+    var us = turn
+    var them = swap_color(turn)
+
+    board[move.from] = board[move.to]
+    board[move.from].type = move.piece // to undo any promotions
+    board[move.to] = null
+
+    if (move.flags & BITS.CAPTURE) {
+      board[move.to] = { type: move.captured, color: them }
+    } else if (move.flags & BITS.EP_CAPTURE) {
+      var index
+      if (us === BLACK) {
+        index = move.to - 16
+      } else {
+        index = move.to + 16
+      }
+      board[index] = { type: PAWN, color: them }
+    }
+
+    if (move.flags & (BITS.KSIDE_CASTLE | BITS.QSIDE_CASTLE)) {
+      var castling_to, castling_from
+      if (move.flags & BITS.KSIDE_CASTLE) {
+        castling_to = move.to + 1
+        castling_from = move.to - 1
+      } else if (move.flags & BITS.QSIDE_CASTLE) {
+        castling_to = move.to - 2
+        castling_from = move.to + 1
+      }
+
+      board[castling_to] = board[castling_from]
+      board[castling_from] = null
+    }
+
+    return move
+  }
+
+  /* this function is used to uniquely identify ambiguous moves */
+  function get_disambiguator(move, sloppy) {
+    var moves = generate_moves({ legal: !sloppy })
+
+    var from = move.from
+    var to = move.to
+    var piece = move.piece
+
+    var ambiguities = 0
+    var same_rank = 0
+    var same_file = 0
+
+    for (var i = 0, len = moves.length; i < len; i++) {
+      var ambig_from = moves[i].from
+      var ambig_to = moves[i].to
+      var ambig_piece = moves[i].piece
+
+      /* if a move of the same piece type ends on the same to square, we'll
+       * need to add a disambiguator to the algebraic notation
+       */
+      if (piece === ambig_piece && from !== ambig_from && to === ambig_to) {
+        ambiguities++
+
+        if (rank(from) === rank(ambig_from)) {
+          same_rank++
+        }
+
+        if (file(from) === file(ambig_from)) {
+          same_file++
+        }
+      }
+    }
+
+    if (ambiguities > 0) {
+      /* if there exists a similar moving piece on the same rank and file as
+       * the move in question, use the square as the disambiguator
+       */
+      if (same_rank > 0 && same_file > 0) {
+        return algebraic(from)
+      } else if (same_file > 0) {
+        /* if the moving piece rests on the same file, use the rank symbol as the
+         * disambiguator
+         */
+        return algebraic(from).charAt(1)
+      } else {
+        /* else use the file symbol */
+        return algebraic(from).charAt(0)
+      }
+    }
+
+    return ''
+  }
+
+  function ascii() {
+    var s = '   +------------------------+\n'
+    for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+      /* display the rank */
+      if (file(i) === 0) {
+        s += ' ' + '87654321'[rank(i)] + ' |'
+      }
+
+      /* empty piece */
+      if (board[i] == null) {
+        s += ' . '
+      } else {
+        var piece = board[i].type
+        var color = board[i].color
+        var symbol = color === WHITE ? piece.toUpperCase() : piece.toLowerCase()
+        s += ' ' + symbol + ' '
+      }
+
+      if ((i + 1) & 0x88) {
+        s += '|\n'
+        i += 8
+      }
+    }
+    s += '   +------------------------+\n'
+    s += '     a  b  c  d  e  f  g  h\n'
+
+    return s
+  }
+
+  // convert a move from Standard Algebraic Notation (SAN) to 0x88 coordinates
+  function move_from_san(move, sloppy) {
+    // strip off any move decorations: e.g Nf3+?!
+    var clean_move = stripped_san(move)
+
+    // if we're using the sloppy parser run a regex to grab piece, to, and from
+    // this should parse invalid SAN like: Pe2-e4, Rc1c4, Qf3xf7
+    if (sloppy) {
+      var matches = clean_move.match(
+        /([pnbrqkPNBRQK])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/
+      )
+      if (matches) {
+        var piece = matches[1]
+        var from = matches[2]
+        var to = matches[3]
+        var promotion = matches[4]
+      }
+    }
+
+    var moves = generate_moves()
+    for (var i = 0, len = moves.length; i < len; i++) {
+      // try the strict parser first, then the sloppy parser if requested
+      // by the user
+      if (
+        clean_move === stripped_san(move_to_san(moves[i])) ||
+        (sloppy && clean_move === stripped_san(move_to_san(moves[i], true)))
+      ) {
+        return moves[i]
+      } else {
+        if (
+          matches &&
+          (!piece || piece.toLowerCase() == moves[i].piece) &&
+          SQUARES[from] == moves[i].from &&
+          SQUARES[to] == moves[i].to &&
+          (!promotion || promotion.toLowerCase() == moves[i].promotion)
+        ) {
+          return moves[i]
+        }
+      }
+    }
+
+    return null
+  }
+
+  /*****************************************************************************
+   * UTILITY FUNCTIONS
+   ****************************************************************************/
+  function rank(i) {
+    return i >> 4
+  }
+
+  function file(i) {
+    return i & 15
+  }
+
+  function algebraic(i) {
+    var f = file(i),
+      r = rank(i)
+    return 'abcdefgh'.substring(f, f + 1) + '87654321'.substring(r, r + 1)
+  }
+
+  function swap_color(c) {
+    return c === WHITE ? BLACK : WHITE
+  }
+
+  function is_digit(c) {
+    return '0123456789'.indexOf(c) !== -1
+  }
+
+  /* pretty = external move object */
+  function make_pretty(ugly_move) {
+    var move = clone(ugly_move)
+    move.san = move_to_san(move, false)
+    move.to = algebraic(move.to)
+    move.from = algebraic(move.from)
+
+    var flags = ''
+
+    for (var flag in BITS) {
+      if (BITS[flag] & move.flags) {
+        flags += FLAGS[flag]
+      }
+    }
+    move.flags = flags
+
+    return move
+  }
+
+  function clone(obj) {
+    var dupe = obj instanceof Array ? [] : {}
+
+    for (var property in obj) {
+      if (typeof property === 'object') {
+        dupe[property] = clone(obj[property])
+      } else {
+        dupe[property] = obj[property]
+      }
+    }
+
+    return dupe
+  }
+
+  function trim(str) {
+    return str.replace(/^\s+|\s+$/g, '')
+  }
+
+  /*****************************************************************************
+   * DEBUGGING UTILITIES
+   ****************************************************************************/
+  function perft(depth) {
+    var moves = generate_moves({ legal: false })
+    var nodes = 0
+    var color = turn
+
+    for (var i = 0, len = moves.length; i < len; i++) {
+      make_move(moves[i])
+      if (!king_attacked(color)) {
+        if (depth - 1 > 0) {
+          var child_nodes = perft(depth - 1)
+          nodes += child_nodes
+        } else {
+          nodes++
+        }
+      }
+      undo_move()
+    }
+
+    return nodes
+  }
+
+  return {
+    /***************************************************************************
+     * PUBLIC CONSTANTS (is there a better way to do this?)
+     **************************************************************************/
+    WHITE: WHITE,
+    BLACK: BLACK,
+    PAWN: PAWN,
+    KNIGHT: KNIGHT,
+    BISHOP: BISHOP,
+    ROOK: ROOK,
+    QUEEN: QUEEN,
+    KING: KING,
+    SQUARES: (function() {
+      /* from the ECMA-262 spec (section 12.6.4):
+       * "The mechanics of enumerating the properties ... is
+       * implementation dependent"
+       * so: for (var sq in SQUARES) { keys.push(sq); } might not be
+       * ordered correctly
+       */
+      var keys = []
+      for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+        if (i & 0x88) {
+          i += 7
+          continue
+        }
+        keys.push(algebraic(i))
+      }
+      return keys
+    })(),
+    FLAGS: FLAGS,
+
+    /***************************************************************************
+     * PUBLIC API
+     **************************************************************************/
+    load: function(fen) {
+      return load(fen)
+    },
+
+    reset: function() {
+      return reset()
+    },
+
+    moves: function(options) {
+      /* The internal representation of a chess move is in 0x88 format, and
+       * not meant to be human-readable.  The code below converts the 0x88
+       * square coordinates to algebraic coordinates.  It also prunes an
+       * unnecessary move keys resulting from a verbose call.
+       */
+
+      var ugly_moves = generate_moves(options)
+      var moves = []
+
+      for (var i = 0, len = ugly_moves.length; i < len; i++) {
+        /* does the user want a full move object (most likely not), or just
+         * SAN
+         */
+        if (
+          typeof options !== 'undefined' &&
+          'verbose' in options &&
+          options.verbose
+        ) {
+          moves.push(make_pretty(ugly_moves[i]))
+        } else {
+          moves.push(move_to_san(ugly_moves[i], false))
+        }
+      }
+
+      return moves
+    },
+
+    in_check: function() {
+      return in_check()
+    },
+
+    in_checkmate: function() {
+      return in_checkmate()
+    },
+
+    in_stalemate: function() {
+      return in_stalemate()
+    },
+
+    in_draw: function() {
+      return (
+        half_moves >= 100 ||
+        in_stalemate() ||
+        insufficient_material() ||
+        in_threefold_repetition()
+      )
+    },
+
+    insufficient_material: function() {
+      return insufficient_material()
+    },
+
+    in_threefold_repetition: function() {
+      return in_threefold_repetition()
+    },
+
+    game_over: function() {
+      return (
+        half_moves >= 100 ||
+        in_checkmate() ||
+        in_stalemate() ||
+        insufficient_material() ||
+        in_threefold_repetition()
+      )
+    },
+
+    validate_fen: function(fen) {
+      return validate_fen(fen)
+    },
+
+    fen: function() {
+      return generate_fen()
+    },
+
+    board: function() {
+      var output = [],
+        row = []
+
+      for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+        if (board[i] == null) {
+          row.push(null)
+        } else {
+          row.push({ type: board[i].type, color: board[i].color })
+        }
+        if ((i + 1) & 0x88) {
+          output.push(row)
+          row = []
+          i += 8
+        }
+      }
+
+      return output
+    },
+
+    pgn: function(options) {
+      /* using the specification from http://www.chessclub.com/help/PGN-spec
+       * example for html usage: .pgn({ max_width: 72, newline_char: "<br />" })
+       */
+      var newline =
+        typeof options === 'object' && typeof options.newline_char === 'string'
+          ? options.newline_char
+          : '\n'
+      var max_width =
+        typeof options === 'object' && typeof options.max_width === 'number'
+          ? options.max_width
+          : 0
+      var result = []
+      var header_exists = false
+
+      /* add the PGN header headerrmation */
+      for (var i in header) {
+        /* TODO: order of enumerated properties in header object is not
+         * guaranteed, see ECMA-262 spec (section 12.6.4)
+         */
+        result.push('[' + i + ' "' + header[i] + '"]' + newline)
+        header_exists = true
+      }
+
+      if (header_exists && history.length) {
+        result.push(newline)
+      }
+
+      /* pop all of history onto reversed_history */
+      var reversed_history = []
+      while (history.length > 0) {
+        reversed_history.push(undo_move())
+      }
+
+      var moves = []
+      var move_string = ''
+
+      /* build the list of moves.  a move_string looks like: "3. e3 e6" */
+      while (reversed_history.length > 0) {
+        var move = reversed_history.pop()
+
+        /* if the position started with black to move, start PGN with 1. ... */
+        if (!history.length && move.color === 'b') {
+          move_string = move_number + '. ...'
+        } else if (move.color === 'w') {
+          /* store the previous generated move_string if we have one */
+          if (move_string.length) {
+            moves.push(move_string)
+          }
+          move_string = move_number + '.'
+        }
+
+        move_string = move_string + ' ' + move_to_san(move, false)
+        make_move(move)
+      }
+
+      /* are there any other leftover moves? */
+      if (move_string.length) {
+        moves.push(move_string)
+      }
+
+      /* is there a result? */
+      if (typeof header.Result !== 'undefined') {
+        moves.push(header.Result)
+      }
+
+      /* history should be back to what is was before we started generating PGN,
+       * so join together moves
+       */
+      if (max_width === 0) {
+        return result.join('') + moves.join(' ')
+      }
+
+      /* wrap the PGN output at max_width */
+      var current_width = 0
+      for (var i = 0; i < moves.length; i++) {
+        /* if the current move will push past max_width */
+        if (current_width + moves[i].length > max_width && i !== 0) {
+          /* don't end the line with whitespace */
+          if (result[result.length - 1] === ' ') {
+            result.pop()
+          }
+
+          result.push(newline)
+          current_width = 0
+        } else if (i !== 0) {
+          result.push(' ')
+          current_width++
+        }
+        result.push(moves[i])
+        current_width += moves[i].length
+      }
+
+      return result.join('')
+    },
+
+    load_pgn: function(pgn, options) {
+      // allow the user to specify the sloppy move parser to work around over
+      // disambiguation bugs in Fritz and Chessbase
+      var sloppy =
+        typeof options !== 'undefined' && 'sloppy' in options
+          ? options.sloppy
+          : false
+
+      function mask(str) {
+        return str.replace(/\\/g, '\\')
+      }
+
+      function has_keys(object) {
+        for (var key in object) {
+          return true
+        }
+        return false
+      }
+
+      function parse_pgn_header(header, options) {
+        var newline_char =
+          typeof options === 'object' &&
+          typeof options.newline_char === 'string'
+            ? options.newline_char
+            : '\r?\n'
+        var header_obj = {}
+        var headers = header.split(new RegExp(mask(newline_char)))
+        var key = ''
+        var value = ''
+
+        for (var i = 0; i < headers.length; i++) {
+          key = headers[i].replace(/^\[([A-Z][A-Za-z]*)\s.*\]$/, '$1')
+          value = headers[i].replace(/^\[[A-Za-z]+\s"(.*)"\]$/, '$1')
+          if (trim(key).length > 0) {
+            header_obj[key] = value
+          }
+        }
+
+        return header_obj
+      }
+
+      var newline_char =
+        typeof options === 'object' && typeof options.newline_char === 'string'
+          ? options.newline_char
+          : '\r?\n'
+
+      // RegExp to split header. Takes advantage of the fact that header and movetext
+      // will always have a blank line between them (ie, two newline_char's).
+      // With default newline_char, will equal: /^(\[((?:\r?\n)|.)*\])(?:\r?\n){2}/
+      var header_regex = new RegExp(
+        '^(\\[((?:' +
+          mask(newline_char) +
+          ')|.)*\\])' +
+          '(?:' +
+          mask(newline_char) +
+          '){2}'
+      )
+
+      // If no header given, begin with moves.
+      var header_string = header_regex.test(pgn)
+        ? header_regex.exec(pgn)[1]
+        : ''
+
+      // Put the board in the starting position
+      reset()
+
+      /* parse PGN header */
+      var headers = parse_pgn_header(header_string, options)
+      for (var key in headers) {
+        set_header([key, headers[key]])
+      }
+
+      /* load the starting position indicated by [Setup '1'] and
+       * [FEN position] */
+      if (headers['SetUp'] === '1') {
+        if (!('FEN' in headers && load(headers['FEN'], true))) {
+          // second argument to load: don't clear the headers
+          return false
+        }
+      }
+
+      /* delete header to get the moves */
+      var ms = pgn
+        .replace(header_string, '')
+        .replace(new RegExp(mask(newline_char), 'g'), ' ')
+
+      /* delete comments */
+      ms = ms.replace(/(\{[^}]+\})+?/g, '')
+
+      /* delete recursive annotation variations */
+      var rav_regex = /(\([^\(\)]+\))+?/g
+      while (rav_regex.test(ms)) {
+        ms = ms.replace(rav_regex, '')
+      }
+
+      /* delete move numbers */
+      ms = ms.replace(/\d+\.(\.\.)?/g, '')
+
+      /* delete ... indicating black to move */
+      ms = ms.replace(/\.\.\./g, '')
+
+      /* delete numeric annotation glyphs */
+      ms = ms.replace(/\$\d+/g, '')
+
+      /* trim and get array of moves */
+      var moves = trim(ms).split(new RegExp(/\s+/))
+
+      /* delete empty entries */
+      moves = moves
+        .join(',')
+        .replace(/,,+/g, ',')
+        .split(',')
+      var move = ''
+
+      for (var half_move = 0; half_move < moves.length - 1; half_move++) {
+        move = move_from_san(moves[half_move], sloppy)
+
+        /* move not possible! (don't clear the board to examine to show the
+         * latest valid position)
+         */
+        if (move == null) {
+          return false
+        } else {
+          make_move(move)
+        }
+      }
+
+      /* examine last move */
+      move = moves[moves.length - 1]
+      if (POSSIBLE_RESULTS.indexOf(move) > -1) {
+        if (has_keys(header) && typeof header.Result === 'undefined') {
+          set_header(['Result', move])
+        }
+      } else {
+        move = move_from_san(move, sloppy)
+        if (move == null) {
+          return false
+        } else {
+          make_move(move)
+        }
+      }
+      return true
+    },
+
+    header: function() {
+      return set_header(arguments)
+    },
+
+    ascii: function() {
+      return ascii()
+    },
+
+    turn: function() {
+      return turn
+    },
+
+    move: function(move, options) {
+      /* The move function can be called with in the following parameters:
+       *
+       * .move('Nxb7')      <- where 'move' is a case-sensitive SAN string
+       *
+       * .move({ from: 'h7', <- where the 'move' is a move object (additional
+       *         to :'h8',      fields are ignored)
+       *         promotion: 'q',
+       *      })
+       */
+
+      // allow the user to specify the sloppy move parser to work around over
+      // disambiguation bugs in Fritz and Chessbase
+      var sloppy =
+        typeof options !== 'undefined' && 'sloppy' in options
+          ? options.sloppy
+          : false
+
+      var move_obj = null
+
+      if (typeof move === 'string') {
+        move_obj = move_from_san(move, sloppy)
+      } else if (typeof move === 'object') {
+        var moves = generate_moves()
+
+        /* convert the pretty move object to an ugly move object */
+        for (var i = 0, len = moves.length; i < len; i++) {
+          if (
+            move.from === algebraic(moves[i].from) &&
+            move.to === algebraic(moves[i].to) &&
+            (!('promotion' in moves[i]) ||
+              move.promotion === moves[i].promotion)
+          ) {
+            move_obj = moves[i]
+            break
+          }
+        }
+      }
+
+      /* failed to find move */
+      if (!move_obj) {
+        return null
+      }
+
+      /* need to make a copy of move because we can't generate SAN after the
+       * move is made
+       */
+      var pretty_move = make_pretty(move_obj)
+
+      make_move(move_obj)
+
+      return pretty_move
+    },
+
+    undo: function() {
+      var move = undo_move()
+      return move ? make_pretty(move) : null
+    },
+
+    clear: function() {
+      return clear()
+    },
+
+    put: function(piece, square) {
+      return put(piece, square)
+    },
+
+    get: function(square) {
+      return get(square)
+    },
+
+    remove: function(square) {
+      return remove(square)
+    },
+
+    perft: function(depth) {
+      return perft(depth)
+    },
+
+    square_color: function(square) {
+      if (square in SQUARES) {
+        var sq_0x88 = SQUARES[square]
+        return (rank(sq_0x88) + file(sq_0x88)) % 2 === 0 ? 'light' : 'dark'
+      }
+
+      return null
+    },
+
+    history: function(options) {
+      var reversed_history = []
+      var move_history = []
+      var verbose =
+        typeof options !== 'undefined' &&
+        'verbose' in options &&
+        options.verbose
+
+      while (history.length > 0) {
+        reversed_history.push(undo_move())
+      }
+
+      while (reversed_history.length > 0) {
+        var move = reversed_history.pop()
+        if (verbose) {
+          move_history.push(make_pretty(move))
+        } else {
+          move_history.push(move_to_san(move))
+        }
+        make_move(move)
+      }
+
+      return move_history
+    }
+  }
+}
+
+/* export Chess object if using node or any other CommonJS compatible
+ * environment */
+if (typeof exports !== 'undefined') exports.Chess = Chess
+/* export Chess object for any RequireJS compatible environment */
+if (typeof define !== 'undefined')
+  define(function() {
+    return Chess
+  })
+
+</script>
+<script>
+(function () {
+  var FILES = "abcdefgh";
+  var GLYPH = { k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" };
+  var VS = "︎";
+
+  /* ---- Languages: English + Roman Urdu ---- */
+  var DICT = {"en": {"title": "Learn Chess: Step by Step for Beginners", "lang_label": "Language", "h1": "Learn Chess", "sub": "Learn the basics of chess. Explore the board, tap a piece to see how it moves, take the quiz, then play a game with a coach beside you.", "play_now": "Play a game now", "tabs_aria": "Lessons", "tab_board": "1. Board", "tab_pieces": "2. Pieces", "tab_special": "3. Special moves", "tab_mate": "4. Checkmate", "tab_quiz": "5. Quiz", "tab_play": "6. Play", "b_aria": "Chess board in the starting position", "b_h2": "The board and the starting position", "b_l1": "The board is 8 × 8, which makes 64 squares, half light and half dark.", "b_l2": "Set the board so the square in your bottom-right corner is <b>light</b>.", "b_l3": "Columns are the letters <b>a to h</b> and rows are the numbers <b>1 to 8</b>. Together they name every square, like <b>e4</b>.", "b_l4": "The back row, left to right: Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook. The row in front is all Pawns.", "b_l5": "Remember: <b>the queen starts on her own color</b>. The white queen starts on a light square, the black queen on a dark one.", "b_l6": "White always moves first.", "pick_aria": "Choose a piece", "moves_aria": "Board showing where the chosen piece can move", "p_legend": "Tap any square to move the piece there. Yellow dots show where it can go. Rings show where a pawn can capture.", "sp_cast_h": "Castling", "sp_cast_p": "Move the king two squares toward a rook, and that rook jumps to the other side of the king. This tucks your king away safely.", "sp_cast_l1": "Neither the king nor that rook has moved yet.", "sp_cast_l2": "There are no pieces between them.", "sp_cast_l3": "The king is not in check, and it does not pass through or land on a square under attack.", "sp_prom_h": "Promotion", "sp_prom_p": "When a pawn reaches the far end of the board, it becomes a Queen, Rook, Bishop or Knight. Most players choose a Queen because she is the strongest piece.", "sp_ep_h": "En passant", "sp_ep_p": "If an enemy pawn moves two squares forward and lands right beside your pawn, you can capture it <b>immediately</b>, as if it had moved only one square. You must do it on the very next move, or the chance is gone.", "m_aria": "Back rank checkmate: white rook on a8, black king on g8 blocked by its own pawns", "m_legend": "The red square holds the black king. The white rook on a8 gives check, and the king has nowhere to go. That is <b>checkmate</b>.", "m_h": "Check, checkmate and stalemate", "m_l1": "<b>Check:</b> your king is under attack. You must get out of it.", "m_l2": "There are three ways out: move the king, block the attack by placing a piece in between, or capture the attacking piece.", "m_l3": "<b>Checkmate:</b> the king is in check and there is no way out. The game ends and the attacker wins.", "m_l4": "<b>Stalemate:</b> the king is not in check, but you have no legal move. The game is a <b>draw</b>.", "o_h": "Five opening principles", "o_l1": "Control the center squares (d4, e4, d5, e5).", "o_l2": "Develop your knights and bishops first.", "o_l3": "Castle early to keep your king safe.", "o_l4": "Don’t bring your queen out too soon, or she will be chased around.", "o_l5": "Before every move, check what your opponent can capture right now.", "pl_as": "Play as", "pl_lvl": "Computer level", "side_w": "White", "side_b": "Black", "two": "Two players", "lv_1": "Easy", "lv_2": "Medium", "lv_3": "Hard", "board_aria": "Playable chess board", "promo_q": "Choose what your pawn becomes:", "cancel": "Cancel", "btn_hint": "Ask the coach", "btn_undo": "Undo move", "btn_flip": "Flip board", "btn_new": "New game", "pl_legend": "Tap one of your pieces, then tap a square with a yellow dot to move. A ring means a capture. When a pawn reaches the last row, you choose what it becomes. A green frame shows the coach’s suggested move, and yellow marks the last move.", "moves_h": "Moves", "no_moves": "No moves yet.", "foot": "Play, learn from your mistakes, and keep asking the coach.", "pn_k": "King", "pn_q": "Queen", "pn_r": "Rook", "pn_b": "Bishop", "pn_n": "Knight", "pn_p": "Pawn", "val": "Value: {n}", "pi_k_n": "King", "pi_q_n": "Queen", "pi_r_n": "Rook", "pi_b_n": "Bishop", "pi_n_n": "Knight", "pi_p_n": "Pawn", "pi_k_v": "The game is won or lost on him", "pi_k_t": "Moves one square in any direction: forward, backward, sideways or diagonally. It can never move to a square that an enemy piece attacks.", "pi_q_t": "The strongest piece. It moves in a straight line or diagonally, as far as you like, until something blocks the way.", "pi_r_t": "Moves in straight lines only: forward, backward, left or right, as far as you like.", "pi_b_t": "Moves diagonally only, as far as you like. It always stays on the color of square it started on.", "pi_n_t": "Moves in an L shape: two squares in one direction, then one square to the side. It is the only piece that can jump over other pieces.", "pi_p_t": "Moves forward one square, or two squares on its first move. It captures one square diagonally forward, not straight ahead. The rings show where it can capture.", "q1_q": "How does a bishop move?", "q1_o0": "In straight lines", "q1_o1": "Only diagonally", "q1_o2": "In an L shape", "q1_e": "A bishop moves only diagonally and always stays on squares of its own color.", "q2_q": "Which piece can jump over other pieces?", "q2_o0": "Rook", "q2_o1": "Queen", "q2_o2": "Knight", "q2_e": "Only the knight can jump over other pieces with its L-shaped move.", "q3_q": "How many squares can a pawn move on its first move?", "q3_o0": "Only 1", "q3_o1": "1 or 2", "q3_o2": "3", "q3_e": "On its first move a pawn can go 1 or 2 squares. After that, only 1.", "q4_q": "What color square does the white queen start on?", "q4_o0": "A light square", "q4_o1": "A dark square", "q4_e": "The queen starts on her own color. The white queen starts on the light square d1.", "q5_q": "What does check mean?", "q5_o0": "The king is under attack", "q5_o1": "The game is over", "q5_o2": "A pawn reached the last row", "q5_e": "Check means the king is under attack. You must get out of it.", "q6_q": "How is a game won?", "q6_o0": "By capturing the most pieces", "q6_o1": "By checkmating the opponent", "q6_o2": "By promoting a pawn to a Queen", "q6_e": "A game is won by checkmate: the enemy king is in check and has no way out.", "qz_done": "Quiz complete", "qz_score": "Your score:", "qz_great": "Great work! You’re ready to play a real game.", "qz_ok": "Good effort. Review the pieces lesson and try again.", "qz_best": "Your best score so far:", "qz_again": "Try again", "qz_qn": "Question {n} / {t}", "qz_ok1": "Correct!", "qz_no1": "Not quite.", "qz_see": "See score", "qz_next": "Next question", "and": " and ", "desc": "{p} {a} to {b}", "desc_cap": "{p} {a} to {b} (captured {c})", "c_castle": "Castling: your king is safe and your rook has joined the game. Keeping the king safe is the most important rule of the game.", "c_cap_a": "Captured a {p} (value {v}). You traded a lower-value piece for a higher-value one, which is a direct gain.", "c_cap_b": "Captured a {p} (value {v}). You are now ahead in material, which gives you an advantage.", "c_promo": "Your pawn became a Queen, the strongest piece. That is a huge advantage.", "c_mate": "Checkmate! The enemy king cannot escape. The game is over.", "c_check": "Check! The opponent must deal with it first, so you keep the initiative.", "c_safe": "This piece was under attack, and this move makes it safe. Protecting your own pieces is the most important habit in chess.", "c_fork": "Fork: one piece attacks two valuable pieces at once ({t}). The opponent can only save one.", "c_tgt": "Next move this piece can capture the {t}, so your opponent has to deal with that.", "c_dev": "You developed a piece. The sooner your pieces join the game the better, because pieces left at home can’t do anything.", "c_center": "You control the center. Pieces in the center influence more squares.", "w_loose": "After this move your {p} is under attack and can’t be saved. Leaving a piece unprotected is the most common mistake.", "w_queen": "Bringing the queen out this early isn’t ideal. Your opponent can chase her with small pieces and you lose time. Develop knights and bishops first.", "c_default": "This move improves your position a little, because the piece controls more squares and gives your opponent fewer chances.", "warn_pre": "Warning: {x}", "better": "Better move: {d}. {x}", "t_mate2": "Checkmate! {s} wins.", "t_mate1": "Checkmate! Brilliant, you won.", "t_mistake": "Mistake: {d}", "c_engine": "By the engine’s evaluation, this move made your position much worse.", "t_ok": "Okay, but there was a better move: {d}", "t_good": "Good move: {d}", "side_title": "{s}: {t}", "t_opp": "Opponent played: {d}", "c_opp_loose": "Opportunity: the enemy piece is no longer protected. See if you can capture it.", "c_in_check": "Your king is in check. Move the king, block the attack, or capture the attacking piece.", "t_hint": "Coach’s suggestion: {d}", "t_start": "Game started", "intro2": "Two players share this screen. White moves first. Take turns: tap a piece, then tap a highlighted square.", "intro1": "You are {s}, and your pieces are at the bottom. {f} If you get stuck, press “Ask the coach” to see a suggested move with a green frame and the reason for it.", "first_b": "The computer moves first.", "first_w": "Make the first move.", "st_mate2": "Checkmate! {s} wins.", "st_lost": "Checkmate. You lost.", "st_won": "Checkmate! You won.", "st_draw": "The game is a draw.", "st_think": "Thinking...", "st_move": "{s} to move.", "st_turn": "Your turn ({s}).", "st_check": "King in check!"}, "ur": {"title": "Chess Seekhein: Beginners ke liye Step by Step", "lang_label": "Zubaan", "h1": "Chess Seekhein", "sub": "Chess ke bunyadi usool seekhein. Board dekhein, kisi bhi mohre par tap karke dekhein ke wo kaise chalta hai, quiz dein, phir coach ke saath ek game khelein.", "play_now": "Abhi game khelein", "tabs_aria": "Sabaq", "tab_board": "1. Board", "tab_pieces": "2. Mohray", "tab_special": "3. Khaas chalein", "tab_mate": "4. Checkmate", "tab_quiz": "5. Quiz", "tab_play": "6. Khelein", "b_aria": "Shuru ki position mein chess board", "b_h2": "Board aur shuru ki position", "b_l1": "Board 8 × 8 ka hota hai, yani 64 khanay, aadhay roshan aur aadhay gehray.", "b_l2": "Board is tarah rakhein ke aap ke neechay daayen konay ka khana <b>roshan</b> ho.", "b_l3": "Columns <b>a se h</b> tak huroof hain aur rows <b>1 se 8</b> tak number. Dono mil kar har khane ka naam banatay hain, jaise <b>e4</b>.", "b_l4": "Peechay wali row, baayen se daayen: Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook. Uske agay wali row mein sirf Pawns hotay hain.", "b_l5": "Yaad rakhein: <b>queen apne hi rang ke khane par shuru hoti hai</b>. Safaid queen roshan khane par aur kaali queen gehray khane par hoti hai.", "b_l6": "Safaid hamesha pehle chalta hai.", "pick_aria": "Mohra chunein", "moves_aria": "Board jo dikhata hai ke chuna hua mohra kahan chal sakta hai", "p_legend": "Mohra wahan le jane ke liye kisi bhi khane par tap karein. Peelay nuqtay dikhatay hain ke wo kahan ja sakta hai. Gol daayray dikhatay hain ke pawn kahan capture kar sakta hai.", "sp_cast_h": "Castling", "sp_cast_p": "King ko rook ki taraf do khanay chalayein, aur wo rook king ki doosri taraf kood jata hai. Is se aap ka king mehfooz ho jata hai.", "sp_cast_l1": "Na king aur na wo rook abhi tak chala ho.", "sp_cast_l2": "Dono ke darmiyan koi mohra na ho.", "sp_cast_l3": "King check mein na ho, aur wo kisi aise khane se na guzray aur na wahan rukay jis par hamla ho raha ho.", "sp_prom_h": "Promotion (pawn ki tarqi)", "sp_prom_p": "Jab pawn board ke aakhri siray tak pohanch jaye to wo Queen, Rook, Bishop ya Knight ban sakta hai. Zyada tar khilari Queen chunte hain kyunke wo sab se taqatwar mohra hai.", "sp_ep_h": "En passant", "sp_ep_p": "Agar dushman ka pawn do khanay agay barh kar aap ke pawn ke bilkul saath aa jaye, to aap use <b>fauran</b> capture kar sakte hain, goya wo sirf ek khana chala ho. Ye agli hi chal mein karna hoga, warna mauqa khatam.", "m_aria": "Back rank checkmate: a8 par safaid rook, g8 par kaala king apne hi pawns ki wajah se phansa hua", "m_legend": "Surkh khana kaale king ka hai. a8 par safaid rook check de raha hai aur king ke liye bhaagne ki koi jagah nahi. Isi ko <b>checkmate</b> kehte hain.", "m_h": "Check, checkmate aur stalemate", "m_l1": "<b>Check:</b> aap ke king par hamla hai. Aap ko isse nikalna hoga.", "m_l2": "Nikalne ke teen tareeqay hain: king ko hata lein, beech mein koi mohra rakh kar hamla rok dein, ya hamla karne wala mohra capture kar lein.", "m_l3": "<b>Checkmate:</b> king check mein hai aur nikalne ka koi raasta nahi. Game khatam aur hamla karne wala jeet jata hai.", "m_l4": "<b>Stalemate:</b> king check mein nahi, lekin aap ki koi jaaiz chal baqi nahi. Game <b>draw</b> ho jati hai.", "o_h": "Shuruaat ke paanch usool", "o_l1": "Beech ke khanon (d4, e4, d5, e5) par qabza rakhein.", "o_l2": "Pehle apne knights aur bishops ko maidan mein layein.", "o_l3": "King ko mehfooz rakhne ke liye jaldi castle karein.", "o_l4": "Queen ko bohat jaldi bahar na nikalein, warna use bhagaya jayega.", "o_l5": "Har chal se pehle dekhein ke aap ka mukhalif abhi kya capture kar sakta hai.", "pl_as": "Aap kaun", "pl_lvl": "Computer ka level", "side_w": "Safaid", "side_b": "Kaala", "two": "Do khilari", "lv_1": "Aasan", "lv_2": "Darmiyana", "lv_3": "Mushkil", "board_aria": "Khelne wala chess board", "promo_q": "Chunein ke aap ka pawn kya banay:", "cancel": "Mansookh", "btn_hint": "Coach se poochein", "btn_undo": "Chal wapas lein", "btn_flip": "Board palatein", "btn_new": "Nayi game", "pl_legend": "Apna koi mohra tap karein, phir peelay nuqtay wale khane par tap karke chalein. Gol daayra matlab capture. Jab pawn aakhri row par pohanchay to aap chunte hain ke wo kya banay. Hare frame mein coach ki tajweez ki hui chal dikhti hai aur peela rang aakhri chal ko dikhata hai.", "moves_h": "Chalein", "no_moves": "Abhi tak koi chal nahi.", "foot": "Khelein, apni ghaltiyon se seekhein, aur coach se poochte rahein.", "pn_k": "King", "pn_q": "Queen", "pn_r": "Rook", "pn_b": "Bishop", "pn_n": "Knight", "pn_p": "Pawn", "val": "Qeemat: {n}", "pi_k_n": "King (Badshah)", "pi_q_n": "Queen (Wazir)", "pi_r_n": "Rook (Haathi)", "pi_b_n": "Bishop (Oont)", "pi_n_n": "Knight (Ghora)", "pi_p_n": "Pawn (Pyada)", "pi_k_v": "Game isi par jeeti ya haari jati hai", "pi_k_t": "Kisi bhi simt mein ek khana chalta hai: agay, peechay, side mein ya tirchha. Wo kabhi aise khane par nahi ja sakta jis par dushman ka mohra hamla kar raha ho.", "pi_q_t": "Sab se taqatwar mohra. Seedhi line mein ya tirchha, jitna chahein door tak chalta hai, jab tak koi cheez raasta na roke.", "pi_r_t": "Sirf seedhi lines mein chalta hai: agay, peechay, baayen ya daayen, jitna chahein door tak.", "pi_b_t": "Sirf tirchha chalta hai, jitna chahein door tak. Wo hamesha usi rang ke khane par rehta hai jis par shuru hua.", "pi_n_t": "L shakal mein chalta hai: ek simt mein do khanay, phir side mein ek khana. Ye wahid mohra hai jo doosray mohron ke oopar se kood sakta hai.", "pi_p_t": "Ek khana agay chalta hai, ya pehli chal par do khanay. Capture tirchha ek khana agay karta hai, seedha nahi. Gol daayray dikhatay hain ke wo kahan capture kar sakta hai.", "q1_q": "Bishop kaise chalta hai?", "q1_o0": "Seedhi lines mein", "q1_o1": "Sirf tirchha", "q1_o2": "L shakal mein", "q1_e": "Bishop sirf tirchha chalta hai aur hamesha apne hi rang ke khanon par rehta hai.", "q2_q": "Kaun sa mohra doosray mohron ke oopar se kood sakta hai?", "q2_o0": "Rook", "q2_o1": "Queen", "q2_o2": "Knight", "q2_e": "Sirf knight apni L shakal ki chal se doosray mohron ke oopar se kood sakta hai.", "q3_q": "Pawn apni pehli chal mein kitnay khanay chal sakta hai?", "q3_o0": "Sirf 1", "q3_o1": "1 ya 2", "q3_o2": "3", "q3_e": "Pehli chal mein pawn 1 ya 2 khanay chal sakta hai. Uske baad sirf 1.", "q4_q": "Safaid queen kis rang ke khane par shuru hoti hai?", "q4_o0": "Roshan khane par", "q4_o1": "Gehray khane par", "q4_e": "Queen apne hi rang par shuru hoti hai. Safaid queen roshan khane d1 par hoti hai.", "q5_q": "Check ka kya matlab hai?", "q5_o0": "King par hamla hai", "q5_o1": "Game khatam ho gayi", "q5_o2": "Pawn aakhri row par pohanch gaya", "q5_e": "Check ka matlab hai ke king par hamla hai. Aap ko isse nikalna hoga.", "q6_q": "Game kaise jeeti jati hai?", "q6_o0": "Sab se zyada mohray capture karke", "q6_o1": "Mukhalif ko checkmate karke", "q6_o2": "Pawn ko Queen bana kar", "q6_e": "Game checkmate se jeeti jati hai: dushman ka king check mein hota hai aur uske paas nikalne ka raasta nahi hota.", "qz_done": "Quiz mukammal", "qz_score": "Aap ka score:", "qz_great": "Shabash! Aap ab asli game khelne ke liye tayyar hain.", "qz_ok": "Achi koshish. Mohron ka sabaq dobara dekhein aur phir koshish karein.", "qz_best": "Ab tak ka behtareen score:", "qz_again": "Dobara koshish karein", "qz_qn": "Sawal {n} / {t}", "qz_ok1": "Durust!", "qz_no1": "Ghalat.", "qz_see": "Score dekhein", "qz_next": "Agla sawal", "and": " aur ", "desc": "{p} {a} se {b}", "desc_cap": "{p} {a} se {b} ({c} capture kiya)", "c_castle": "Castling: aap ka king mehfooz hai aur rook game mein shamil ho gaya. King ko mehfooz rakhna game ka sab se ahem usool hai.", "c_cap_a": "Aap ne {p} capture kiya (qeemat {v}). Aap ne kam qeemat ka mohra de kar zyada qeemat ka mohra liya, ye seedha faida hai.", "c_cap_b": "Aap ne {p} capture kiya (qeemat {v}). Ab aap mohron mein agay hain, jis se aap ko faida milta hai.", "c_promo": "Aap ka pawn Queen ban gaya, jo sab se taqatwar mohra hai. Ye bohat bara faida hai.", "c_mate": "Checkmate! Dushman ka king bach nahi sakta. Game khatam.", "c_check": "Check! Mukhalif ko pehle isse nipatna hoga, is liye pehal aap ke paas rehti hai.", "c_safe": "Ye mohra hamle ki zad mein tha aur ye chal use mehfooz kar deti hai. Apne mohron ki hifazat chess ki sab se ahem aadat hai.", "c_fork": "Fork: ek mohra ek hi waqt mein do qeemti mohron par hamla karta hai ({t}). Mukhalif sirf ek ko bacha sakta hai.", "c_tgt": "Agli chal mein ye mohra {t} capture kar sakta hai, is liye mukhalif ko is ka hal nikalna hoga.", "c_dev": "Aap ne ek mohra maidan mein utara. Mohray jitni jaldi game mein shamil hon utna behtar, kyunke ghar mein rehne wale mohray kuch nahi kar sakte.", "c_center": "Aap ka markaz par qabza hai. Markaz ke mohray zyada khanon par asar rakhtay hain.", "w_loose": "Is chal ke baad aap ka {p} hamle ki zad mein hai aur bach nahi sakta. Mohray ko be-hifazat chhorna sab se aam ghalti hai.", "w_queen": "Queen ko itni jaldi bahar nikalna theek nahi. Mukhalif chhotay mohron se use bhaga sakta hai aur aap ka waqt zaya hota hai. Pehle knights aur bishops ko utarein.", "c_default": "Ye chal aap ki position ko thora behtar karti hai, kyunke mohra zyada khanon par qabza rakhta hai aur mukhalif ko kam mauqay deta hai.", "warn_pre": "Khabardar: {x}", "better": "Behtar chal: {d}. {x}", "t_mate2": "Checkmate! {s} jeet gaya.", "t_mate1": "Checkmate! Shandar, aap jeet gaye.", "t_mistake": "Ghalti: {d}", "c_engine": "Engine ke andaazay ke mutabiq is chal se aap ki position bohat kharab ho gayi.", "t_ok": "Theek hai, lekin ek behtar chal maujood thi: {d}", "t_good": "Achi chal: {d}", "side_title": "{s}: {t}", "t_opp": "Mukhalif ne chali: {d}", "c_opp_loose": "Mauqa: dushman ka mohra ab mehfooz nahi. Dekhein kya aap use capture kar sakte hain.", "c_in_check": "Aap ka king check mein hai. King ko hatayein, hamla roken, ya hamla karne wala mohra capture karein.", "t_hint": "Coach ki tajweez: {d}", "t_start": "Game shuru", "intro2": "Do khilari ek hi screen share karte hain. Safaid pehle chalta hai. Baari baari chalein: mohra tap karein, phir numayan khane par tap karein.", "intro1": "Aap {s} hain, aur aap ke mohray neechay hain. {f} Agar phans jayein to “Coach se poochein” dabayein, hare frame mein tajweez ki hui chal aur uski wajah nazar aayegi.", "first_b": "Computer pehle chalega.", "first_w": "Pehli chal aap chalein.", "st_mate2": "Checkmate! {s} jeet gaya.", "st_lost": "Checkmate. Aap haar gaye.", "st_won": "Checkmate! Aap jeet gaye.", "st_draw": "Game draw hui.", "st_think": "Soch raha hai...", "st_move": "{s} ki chal hai.", "st_turn": "Aap ki baari ({s}).", "st_check": "King check mein hai!"}};
+  var LANG = "en";
+  try {
+    var sv = localStorage.getItem("cs-lang");
+    if (sv === "en" || sv === "ur") LANG = sv;
+    else if (/^ur/i.test(navigator.language || "")) LANG = "ur";
+  } catch (e) {}
+  function M(k, p) { return { k: k, p: p || {} }; }
+  function tr(x) {
+    if (x == null) return "";
+    if (typeof x === "string") return x;
+    if (typeof x === "number") return String(x);
+    if (Array.isArray(x)) return x.map(tr).join(tr(M("and")));
+    var s = DICT[LANG][x.k];
+    if (s == null) s = DICT.en[x.k];
+    if (s == null) return x.k;
+    return s.replace(/\{(\w+)\}/g, function (_, n) { return tr(x.p[n]); });
+  }
+  function tl(k, p) { return tr(M(k, p)); }
+  function applyStatic() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-i]"), function (el) { el.textContent = tl(el.getAttribute("data-i")); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-ih]"), function (el) { el.innerHTML = tl(el.getAttribute("data-ih")); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-ia]"), function (el) { el.setAttribute("aria-label", tl(el.getAttribute("data-ia"))); });
+  }
+
+  function sqName(f, r) { return FILES[f] + (r + 1); }
+
+  function render(el, pieces, opts) {
+    opts = opts || {};
+    el.innerHTML = "";
+    for (var ri = 0; ri < 8; ri++) {
+      var r = opts.flip ? ri : 7 - ri;
+      for (var fi = 0; fi < 8; fi++) {
+        var f = opts.flip ? 7 - fi : fi;
+        var name = sqName(f, r);
+        var d = document.createElement("div");
+        d.className = "sq " + ((f + r) % 2 === 1 ? "l" : "d");
+        d.dataset.f = f;
+        d.dataset.r = r;
+        if (opts.tap) d.classList.add("tap");
+        if (opts.dots && opts.dots.indexOf(name) > -1) d.classList.add("dot");
+        if (opts.rings && opts.rings.indexOf(name) > -1) d.classList.add("ring");
+        if (opts.mate === name) d.classList.add("mate");
+        if (opts.last && opts.last.indexOf(name) > -1) d.classList.add("last");
+        if (opts.hint && opts.hint.indexOf(name) > -1) d.classList.add("hintsq");
+        if (opts.here === name) d.classList.add("here");
+        var html = "";
+        if (f === (opts.flip ? 7 : 0)) html += '<span class="co rk">' + (r + 1) + "</span>";
+        if (r === (opts.flip ? 7 : 0)) html += '<span class="co fl">' + FILES[f] + "</span>";
+        var p = pieces[name];
+        if (p) html += '<span class="pc ' + p[0] + '">' + GLYPH[p[1]] + VS + "</span>";
+        d.innerHTML = html;
+        el.appendChild(d);
+      }
+    }
+  }
+
+  /* Lesson 1: starting position */
+  var start = {};
+  var back = "rnbqkbnr";
+  for (var i = 0; i < 8; i++) {
+    start[FILES[i] + "1"] = "w" + back[i];
+    start[FILES[i] + "2"] = "wp";
+    start[FILES[i] + "7"] = "bp";
+    start[FILES[i] + "8"] = "b" + back[i];
+  }
+  render(document.getElementById("b-start"), start);
+
+  /* Lesson 4: back rank mate */
+  render(document.getElementById("b-mate"), {
+    a8: "wr", g1: "wk", g8: "bk", f7: "bp", g7: "bp", h7: "bp"
+  }, { mate: "g8" });
+
+  /* Lesson 2: how pieces move */
+  var INFO = {};
+  ["k", "q", "r", "b", "n", "p"].forEach(function (c) { INFO[c] = { pos: c === "p" ? "e2" : "d4" }; });
+  var PV = { q: 9, r: 5, b: 3, n: 3, p: 1 };
+  var NAMES = [["k"], ["q"], ["r"], ["b"], ["n"], ["p"]];
+  var cur = "q", pos = INFO.q.pos;
+  var movesEl = document.getElementById("b-moves");
+  var picksEl = document.getElementById("picks");
+  var infoEl = document.getElementById("pinfo");
+
+  function slide(f, r, dirs, out) {
+    dirs.forEach(function (d) {
+      var x = f + d[0], y = r + d[1];
+      while (x >= 0 && x < 8 && y >= 0 && y < 8) { out.push(sqName(x, y)); x += d[0]; y += d[1]; }
+    });
+  }
+  function movesFor(type, f, r) {
+    var dots = [], rings = [], i;
+    var ROOK = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    var BISH = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
+    if (type === "r") slide(f, r, ROOK, dots);
+    if (type === "b") slide(f, r, BISH, dots);
+    if (type === "q") { slide(f, r, ROOK, dots); slide(f, r, BISH, dots); }
+    if (type === "k") {
+      ROOK.concat(BISH).forEach(function (d) {
+        var x = f + d[0], y = r + d[1];
+        if (x >= 0 && x < 8 && y >= 0 && y < 8) dots.push(sqName(x, y));
+      });
+    }
+    if (type === "n") {
+      [[1, 2], [2, 1], [-1, 2], [-2, 1], [1, -2], [2, -1], [-1, -2], [-2, -1]].forEach(function (d) {
+        var x = f + d[0], y = r + d[1];
+        if (x >= 0 && x < 8 && y >= 0 && y < 8) dots.push(sqName(x, y));
+      });
+    }
+    if (type === "p") {
+      if (r < 7) dots.push(sqName(f, r + 1));
+      if (r === 1) dots.push(sqName(f, r + 2));
+      if (r < 7) {
+        if (f > 0) rings.push(sqName(f - 1, r + 1));
+        if (f < 7) rings.push(sqName(f + 1, r + 1));
+      }
+    }
+    return { dots: dots, rings: rings };
+  }
+
+  function drawMoves() {
+    var f = FILES.indexOf(pos[0]), r = parseInt(pos[1], 10) - 1;
+    var m = movesFor(cur, f, r);
+    var pcs = {}; pcs[pos] = "w" + cur;
+    render(movesEl, pcs, { tap: true, dots: m.dots, rings: m.rings, here: pos });
+    var i = INFO[cur];
+    infoEl.innerHTML = "<h2>" + tl("pi_" + cur + "_n") + '</h2><p><span class="val">' + (cur === "k" ? tl("pi_k_v") : tl("val", { n: PV[cur] })) + "</span></p><p>" + tl("pi_" + cur + "_t") + "</p>";
+  }
+
+  NAMES.forEach(function (n) {
+    var b = document.createElement("button");
+    b.className = "pick";
+    b.type = "button";
+    b.dataset.t = n[0];
+    b.setAttribute("data-i", "pn_" + n[0]);
+    b.textContent = tl("pn_" + n[0]);
+    b.setAttribute("aria-pressed", n[0] === cur ? "true" : "false");
+    b.addEventListener("click", function () {
+      cur = n[0]; pos = INFO[cur].pos;
+      Array.prototype.forEach.call(picksEl.children, function (c) {
+        c.setAttribute("aria-pressed", c.dataset.t === cur ? "true" : "false");
+      });
+      drawMoves();
+    });
+    picksEl.appendChild(b);
+  });
+
+  movesEl.addEventListener("click", function (e) {
+    var s = e.target.closest(".sq");
+    if (!s) return;
+    var f = parseInt(s.dataset.f, 10), r = parseInt(s.dataset.r, 10);
+    if (cur === "p" && (r === 0 || r === 7)) return;
+    pos = sqName(f, r);
+    drawMoves();
+  });
+  drawMoves();
+
+  /* Lesson 5: quiz */
+  var quizEl = document.getElementById("quiz");
+  var qi = 0, score = 0;
+
+  function saveBest(sc) {
+    var b = sc;
+    try {
+      var o = parseInt(localStorage.getItem("cs-best"), 10);
+      if (o > b) b = o;
+      localStorage.setItem("cs-best", String(b));
+    } catch (e) {}
+    return b;
+  }
+
+  var QN = [3, 3, 3, 2, 3, 3], QA = [1, 2, 1, 0, 0, 1];
+  var answeredIdx = null;
+  function showQ() {
+    if (qi >= QN.length) {
+      var best = saveBest(score);
+      quizEl.innerHTML = "<h2>" + tl("qz_done") + "</h2><p>" + tl("qz_score") + " <b>" + score + " / " + QN.length + "</b></p>" +
+        "<p>" + (score >= 5 ? tl("qz_great") : tl("qz_ok")) + "</p>" +
+        '<p class="legend">' + tl("qz_best") + " " + best + " / " + QN.length + "</p>" +
+        '<button class="btn" id="again" type="button">' + tl("qz_again") + "</button>";
+      document.getElementById("again").addEventListener("click", function () { qi = 0; score = 0; answeredIdx = null; showQ(); });
+      return;
+    }
+    var key = "q" + (qi + 1);
+    quizEl.innerHTML = '<div class="progress">' + tl("qz_qn", { n: qi + 1, t: QN.length }) + "</div>" +
+      '<div class="bar"><i style="width:' + Math.round(qi / QN.length * 100) + '%"></i></div>' +
+      '<div class="qtext"></div><div class="opts"></div><p class="fb" id="fb" aria-live="polite"></p>';
+    quizEl.querySelector(".qtext").textContent = tl(key + "_q");
+    var box = quizEl.querySelector(".opts");
+    for (var k = 0; k < QN[qi]; k++) {
+      (function (idx) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "opt";
+        b.textContent = tl(key + "_o" + idx);
+        b.addEventListener("click", function () { answer(idx, box); });
+        box.appendChild(b);
+      })(k);
+    }
+    if (answeredIdx !== null) showAnswered(answeredIdx, box);
+  }
+
+  function answer(idx, box) {
+    answeredIdx = idx;
+    if (idx === QA[qi]) score++;
+    showAnswered(idx, box);
+  }
+
+  function showAnswered(idx, box) {
+    var a = QA[qi], btns = box.children;
+    for (var i = 0; i < btns.length; i++) btns[i].disabled = true;
+    btns[a].classList.add("ok");
+    if (idx !== a) btns[idx].classList.add("no");
+    document.getElementById("fb").textContent = tl(idx === a ? "qz_ok1" : "qz_no1") + " " + tl("q" + (qi + 1) + "_e");
+    var next = document.createElement("button");
+    next.type = "button";
+    next.className = "btn";
+    next.textContent = qi === QN.length - 1 ? tl("qz_see") : tl("qz_next");
+    next.addEventListener("click", function () { answeredIdx = null; qi++; showQ(); });
+    quizEl.appendChild(next);
+  }
+  showQ();
+
+  /* Lesson 6: play against the computer with a coach */
+  var PVAL = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 100 };
+  var EVAL = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 0 };
+  var PNAME = { p: "Pawn", n: "Knight", b: "Bishop", r: "Rook", q: "Queen", k: "King" };
+  var deadline = Infinity;
+
+  function evalWhite(g) {
+    var b = g.board(), s = 0;
+    for (var r = 0; r < 8; r++) {
+      for (var f = 0; f < 8; f++) {
+        var p = b[r][f];
+        if (!p) continue;
+        var rank = 7 - r;
+        var rel = p.color === "w" ? rank : 7 - rank;
+        var v = EVAL[p.type];
+        var cen = (3.5 - Math.abs(f - 3.5)) + (3.5 - Math.abs(rank - 3.5));
+        if (p.type === "n" || p.type === "b") v += cen * 5 + (rel > 0 ? 20 : 0);
+        else if (p.type === "p") v += rel * (f === 3 || f === 4 ? 12 : (f === 0 || f === 7 ? 2 : 6)) + cen * 2;
+        else if (p.type === "q") v += cen;
+        else if (p.type === "k" && rel === 0 && (f <= 2 || f >= 6)) v += 25;
+        s += p.color === "w" ? v : -v;
+      }
+    }
+    return s;
+  }
+
+  function order(a, b) {
+    function key(m) {
+      return (m.captured ? EVAL[m.captured] * 10 - EVAL[m.piece] : 0) + (m.promotion ? 800 : 0);
+    }
+    return key(b) - key(a);
+  }
+
+  function quiesce(g, alpha, beta, qd) {
+    var stand = (g.turn() === "w" ? 1 : -1) * evalWhite(g);
+    if (qd === 0) return stand;
+    if (stand >= beta) return stand;
+    if (stand > alpha) alpha = stand;
+    var ms = g.moves({ verbose: true }).filter(function (m) { return m.captured; });
+    ms.sort(order);
+    for (var i = 0; i < ms.length; i++) {
+      g.move(ms[i]);
+      var sc = -quiesce(g, -beta, -alpha, qd - 1);
+      g.undo();
+      if (sc >= beta) return sc;
+      if (sc > alpha) alpha = sc;
+    }
+    return alpha;
+  }
+
+  function nega(g, depth, alpha, beta) {
+    if (Date.now() > deadline) throw new Error("timeout");
+    if (depth === 0) {
+      if (g.in_check() && g.moves().length === 0) return -100000;
+      return quiesce(g, alpha, beta, 2);
+    }
+    var ms = g.moves({ verbose: true });
+    if (ms.length === 0) return g.in_check() ? -100000 - depth : 0;
+    ms.sort(order);
+    var best = -Infinity;
+    for (var i = 0; i < ms.length; i++) {
+      g.move(ms[i]);
+      var sc = -nega(g, depth - 1, -beta, -alpha);
+      g.undo();
+      if (sc > best) best = sc;
+      if (best > alpha) alpha = best;
+      if (alpha >= beta) break;
+    }
+    return best;
+  }
+
+  function rootScores(g, depth) {
+    var ms = g.moves({ verbose: true });
+    ms.sort(order);
+    return ms.map(function (m) {
+      g.move(m);
+      var sc = -nega(g, depth - 1, -Infinity, Infinity);
+      g.undo();
+      return { m: m, s: sc };
+    });
+  }
+
+  function bestMove(g, depth) {
+    var ms = g.moves({ verbose: true });
+    ms.sort(order);
+    var best = null, alpha = -Infinity;
+    for (var i = 0; i < ms.length; i++) {
+      g.move(ms[i]);
+      var sc = -nega(g, depth - 1, -Infinity, -alpha);
+      g.undo();
+      if (sc > alpha) { alpha = sc; best = ms[i]; }
+    }
+    return best || ms[0];
+  }
+
+  function bestTimed(g) {
+    var n = g.history().length;
+    var b2 = bestMove(g, 2);
+    deadline = Date.now() + 2500;
+    try {
+      var b3 = bestMove(g, 3);
+      deadline = Infinity;
+      return b3;
+    } catch (e) {
+      deadline = Infinity;
+      while (g.history().length > n) g.undo();
+      return b2;
+    }
+  }
+
+  /* Position helpers for the coach's explanations */
+  function asTurn(g, color) {
+    if (g.turn() === color) return { sim: g, same: true };
+    try {
+      var p = g.fen().split(" ");
+      p[1] = color;
+      p[3] = "-";
+      return { sim: new Chess(p.join(" ")), same: false };
+    } catch (e) {
+      return { sim: new Chess("8/8/8/8/8/8/8/8 w - - 0 1"), same: false };
+    }
+  }
+
+  function movesAs(g, color) {
+    return asTurn(g, color).sim.moves({ verbose: true });
+  }
+
+  function isLoose(g, sq, owner) {
+    var pc = g.get(sq);
+    if (!pc) return false;
+    var enemy = owner === "w" ? "b" : "w";
+    var t = asTurn(g, enemy);
+    var att = t.sim.moves({ verbose: true }).filter(function (m) { return m.to === sq; });
+    if (!att.length) return false;
+    att.sort(function (a, b) { return PVAL[a.piece] - PVAL[b.piece]; });
+    var a = att[0];
+    if (PVAL[a.piece] < PVAL[pc.type]) return true;
+    t.sim.move({ from: a.from, to: a.to, promotion: "q" });
+    var recapture = t.sim.moves({ verbose: true }).some(function (m) { return m.to === sq; });
+    if (t.same) g.undo();
+    return !recapture;
+  }
+
+  function desc(m) {
+    var p = { p: M("pn_" + m.piece), a: m.from, b: m.to };
+    if (m.captured) { p.c = M("pn_" + m.captured); return M("desc_cap", p); }
+    return M("desc", p);
+  }
+
+  function explain(g, mv) {
+    var good = [], warn = [];
+    var me = mv.color, enemy = me === "w" ? "b" : "w";
+    var v = PVAL[mv.piece], cv = mv.captured ? PVAL[mv.captured] : 0;
+    var plies = g.history().length;
+    var looseBefore = mv.piece !== "k" && isLoose(g, mv.from, me);
+
+    g.move({ from: mv.from, to: mv.to, promotion: mv.promotion || "q" });
+    var mate = g.in_checkmate(), check = g.in_check();
+    var loose = !mate && mv.piece !== "k" && isLoose(g, mv.to, me);
+    var targets = [];
+    if (!mate) {
+      movesAs(g, me).forEach(function (m) {
+        if (m.from === mv.to && m.captured && PVAL[m.captured] >= 3 && PVAL[m.captured] < 100) {
+          if (PVAL[m.captured] > v || isLoose(g, m.to, enemy)) {
+            if (targets.indexOf(m.captured) === -1) targets.push(m.captured);
+          }
+        }
+      });
+    }
+    g.undo();
+
+    if (mv.flags.indexOf("k") > -1 || mv.flags.indexOf("q") > -1) {
+      good.push(M("c_castle"));
+    }
+    if (mv.captured) {
+      good.push(M(cv > v ? "c_cap_a" : "c_cap_b", { p: M("pn_" + mv.captured), v: cv }));
+    }
+    if (mv.promotion) {
+      good.push(M("c_promo"));
+    }
+    if (mate) {
+      good.push(M("c_mate"));
+    } else if (check) {
+      good.push(M("c_check"));
+    }
+    if (looseBefore && !loose) {
+      good.push(M("c_safe"));
+    }
+    if (targets.length >= 2) {
+      good.push(M("c_fork", { t: targets.map(function (c) { return M("pn_" + c); }) }));
+    } else if (targets.length === 1) {
+      good.push(M("c_tgt", { t: M("pn_" + targets[0]) }));
+    }
+    if ((mv.piece === "n" || mv.piece === "b") && mv.from[1] === (me === "w" ? "1" : "8") && plies < 24) {
+      good.push(M("c_dev"));
+    }
+    if (["d4", "e4", "d5", "e5"].indexOf(mv.to) > -1 && mv.piece !== "k" && plies < 30) {
+      good.push(M("c_center"));
+    }
+    if (loose && v > cv) {
+      warn.push(M("w_loose", { p: M("pn_" + mv.piece) }));
+    }
+    if (mv.piece === "q" && !mv.captured && plies < 12 && mv.from === (me === "w" ? "d1" : "d8")) {
+      warn.push(M("w_queen"));
+    }
+    if (good.length === 0 && warn.length === 0) {
+      good.push(M("c_default"));
+    }
+    return { good: good.slice(0, 3), warn: warn };
+  }
+
+  /* Tabs */
+  var tabs = document.querySelectorAll(".tab");
+  Array.prototype.forEach.call(tabs, function (t) {
+    t.addEventListener("click", function () {
+      Array.prototype.forEach.call(tabs, function (x) {
+        var on = x === t;
+        x.setAttribute("aria-selected", on ? "true" : "false");
+        document.getElementById("p-" + x.dataset.tab).hidden = !on;
+      });
+      if (t.scrollIntoView) t.scrollIntoView({ inline: "center", block: "nearest" });
+      window.scrollTo(0, 0);
+    });
+  });
+
+  var game = new Chess();
+  var selSq = null, lastMv = null, hintMv = null, busy = false, plog = [];
+  var playEl = document.getElementById("b-play");
+  var statusEl = document.getElementById("pstatus");
+  var logEl = document.getElementById("coachlog");
+  var hintBtn = document.getElementById("hintBtn");
+  var undoBtn = document.getElementById("undoBtn");
+  var newBtn = document.getElementById("newBtn");
+
+  function boardPieces() {
+    var out = {}, b = game.board();
+    for (var r = 0; r < 8; r++) {
+      for (var f = 0; f < 8; f++) {
+        var p = b[r][f];
+        if (p) out[FILES[f] + (8 - r)] = p.color + p.type;
+      }
+    }
+    return out;
+  }
+  function kingSquare(color) {
+    var b = game.board();
+    for (var r = 0; r < 8; r++) {
+      for (var f = 0; f < 8; f++) {
+        var p = b[r][f];
+        if (p && p.type === "k" && p.color === color) return FILES[f] + (8 - r);
+      }
+    }
+    return null;
+  }
+
+  var human = "w", level = 2, flipped = false, pending = null;
+  var SIDE = { w: M("side_w"), b: M("side_b") };
+  var moveListEl = document.getElementById("movelist");
+  var promoEl = document.getElementById("promo");
+  var promoPicks = document.getElementById("promoPicks");
+  var flipBtn = document.getElementById("flipBtn");
+
+  function humanTurn() { return human === "2" || game.turn() === human; }
+
+  function drawPlay() {
+    var dots = [], rings = [];
+    if (selSq) {
+      game.moves({ square: selSq, verbose: true }).forEach(function (m) {
+        (m.captured ? rings : dots).push(m.to);
+      });
+    }
+    var o = { tap: true, dots: dots, rings: rings, here: selSq, flip: flipped };
+    if (lastMv) o.last = [lastMv.from, lastMv.to];
+    if (hintMv) o.hint = [hintMv.from, hintMv.to];
+    if (game.in_check()) o.mate = kingSquare(game.turn());
+    render(playEl, boardPieces(), o);
+
+    var t, over = game.game_over();
+    if (game.in_checkmate()) {
+      var loser = game.turn();
+      t = human === "2" ? tl("st_mate2", { s: SIDE[loser === "w" ? "b" : "w"] }) : (loser === human ? tl("st_lost") : tl("st_won"));
+    } else if (over) t = tl("st_draw");
+    else if (busy) t = tl("st_think");
+    else t = (human === "2" ? tl("st_move", { s: SIDE[game.turn()] }) : tl("st_turn", { s: SIDE[human] })) + (game.in_check() ? " " + tl("st_check") : "");
+    statusEl.textContent = t;
+    statusEl.className = "status" + (over ? " over" : "");
+    hintBtn.disabled = busy || over || !humanTurn();
+    undoBtn.disabled = busy;
+
+    var h = game.history(), out = [];
+    for (var i = 0; i < h.length; i += 2) out.push((i / 2 + 1) + ". " + h[i] + (h[i + 1] ? " " + h[i + 1] : ""));
+    moveListEl.textContent = out.length ? out.join("   ") : tl("no_moves");
+  }
+
+  function renderLog() {
+    logEl.innerHTML = "";
+    plog.forEach(function (e) {
+      var d = document.createElement("div");
+      d.className = "entry";
+      var h = document.createElement("h3");
+      h.className = e.cls;
+      h.textContent = tr(e.title);
+      d.appendChild(h);
+      if (e.items.length) {
+        var ul = document.createElement("ul");
+        ul.className = "clean";
+        e.items.forEach(function (x) {
+          var li = document.createElement("li");
+          li.textContent = tr(x);
+          ul.appendChild(li);
+        });
+        d.appendChild(ul);
+      }
+      logEl.appendChild(d);
+    });
+  }
+
+  function pushLog(entry) {
+    plog.unshift(entry);
+    plog = plog.slice(0, 6);
+    renderLog();
+  }
+
+  function afterMove() {
+    selSq = null;
+    busy = false;
+    drawPlay();
+  }
+
+  function playUser(mv) {
+    busy = true; selSq = null; hintMv = null; pending = null; promoEl.hidden = true;
+    var mine = explain(game, mv);
+    var scores = rootScores(game, 2);
+    var best = scores[0], chosen = scores[0];
+    scores.forEach(function (x) {
+      if (x.s > best.s) best = x;
+      if (x.m.from === mv.from && x.m.to === mv.to && (x.m.promotion || "q") === (mv.promotion || "q")) chosen = x;
+    });
+    var loss = best.s - chosen.s;
+    var alt = null;
+    if (loss >= 90 && human !== "2") alt = { m: best.m, ex: explain(game, best.m) };
+
+    game.move({ from: mv.from, to: mv.to, promotion: mv.promotion || "q" });
+    lastMv = mv;
+
+    var items = mine.good.slice();
+    mine.warn.forEach(function (w) { items.push(M("warn_pre", { x: w })); });
+    var title, cls;
+    if (game.in_checkmate()) { title = human === "2" ? M("t_mate2", { s: SIDE[mv.color] }) : M("t_mate1"); cls = "good"; }
+    else if (loss >= 250) { title = M("t_mistake", { d: desc(mv) }); cls = "bad"; items.push(M("c_engine")); }
+    else if (loss >= 90) { title = M("t_ok", { d: desc(mv) }); cls = "warn"; }
+    else { title = M("t_good", { d: desc(mv) }); cls = "good"; }
+    if (human === "2") title = M("side_title", { s: SIDE[mv.color], t: title });
+    if (alt) items.push(M("better", { d: desc(alt.m), x: alt.ex.good[0] || "" }));
+    pushLog({ title: title, cls: cls, items: items });
+
+    if (game.game_over() || human === "2") { afterMove(); return; }
+    drawPlay();
+    setTimeout(oppMove, 400);
+  }
+
+  function oppMove() {
+    if (humanTurn() || game.game_over()) return;
+    var m;
+    if (level === 3) m = bestTimed(game);
+    else {
+      var sc = rootScores(game, level === 1 ? 1 : 2);
+      sc.sort(function (a, b) { return b.s - a.s; });
+      var pool = sc.filter(function (x) { return x.s >= sc[0].s - (level === 1 ? 200 : 30); });
+      m = pool[Math.floor(Math.random() * pool.length)].m;
+    }
+    var ex = explain(game, m);
+    game.move({ from: m.from, to: m.to, promotion: m.promotion || "q" });
+    lastMv = m;
+    var items = ex.good.slice(0, 2);
+    ex.warn.forEach(function () { items.push(M("c_opp_loose")); });
+    if (game.in_check()) items.push(M("c_in_check"));
+    pushLog({ title: M("t_opp", { d: desc(m) }), cls: "info", items: items });
+    afterMove();
+  }
+
+  playEl.addEventListener("click", function (e) {
+    if (busy || game.game_over() || !humanTurn() || pending) return;
+    var s = e.target.closest(".sq");
+    if (!s) return;
+    var name = FILES[parseInt(s.dataset.f, 10)] + (parseInt(s.dataset.r, 10) + 1);
+    if (selSq) {
+      var legal = game.moves({ square: selSq, verbose: true }).filter(function (m) { return m.to === name; });
+      if (legal.length) {
+        if (legal[0].promotion) { pending = legal; promoEl.hidden = false; return; }
+        playUser(legal[0]);
+        return;
+      }
+    }
+    var p = game.get(name);
+    selSq = p && p.color === game.turn() ? name : null;
+    drawPlay();
+  });
+
+  [["q"], ["r"], ["b"], ["n"], ["x"]].forEach(function (x) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "pick";
+    b.setAttribute("data-i", x[0] === "x" ? "cancel" : "pn_" + x[0]);
+    b.textContent = tl(x[0] === "x" ? "cancel" : "pn_" + x[0]);
+    b.addEventListener("click", function () {
+      if (!pending) return;
+      if (x[0] === "x") { pending = null; promoEl.hidden = true; return; }
+      var mv = pending.filter(function (m) { return m.promotion === x[0]; })[0];
+      if (mv) playUser(mv);
+    });
+    promoPicks.appendChild(b);
+  });
+
+  hintBtn.addEventListener("click", function () {
+    if (busy || game.game_over() || !humanTurn()) return;
+    busy = true; selSq = null; pending = null; promoEl.hidden = true;
+    drawPlay();
+    setTimeout(function () {
+      var m = bestTimed(game);
+      var ex = explain(game, m);
+      hintMv = m;
+      var items = ex.good.slice();
+      ex.warn.forEach(function (w) { items.push(M("warn_pre", { x: w })); });
+      pushLog({ title: M("t_hint", { d: desc(m) }), cls: "hint", items: items });
+      busy = false;
+      drawPlay();
+    }, 40);
+  });
+
+  undoBtn.addEventListener("click", function () {
+    if (busy || !game.history().length) return;
+    game.undo();
+    if (human !== "2" && game.turn() !== human && game.history().length) game.undo();
+    lastMv = null; hintMv = null; selSq = null; pending = null; promoEl.hidden = true;
+    if (human !== "2" && !humanTurn() && !game.game_over()) { busy = true; drawPlay(); setTimeout(oppMove, 400); return; }
+    drawPlay();
+  });
+
+  function newGame() {
+    game = new Chess();
+    selSq = null; lastMv = null; hintMv = null; busy = false; plog = []; pending = null; promoEl.hidden = true;
+    flipped = human === "b";
+    var intro = human === "2" ? M("intro2") : M("intro1", { s: SIDE[human], f: M(human === "b" ? "first_b" : "first_w") });
+    pushLog({ title: M("t_start"), cls: "info", items: [intro] });
+    drawPlay();
+    if (human === "b") { busy = true; drawPlay(); setTimeout(oppMove, 500); }
+  }
+
+  function bindPicks(id, fn) {
+    var box = document.getElementById(id);
+    Array.prototype.forEach.call(box.children, function (b) {
+      b.addEventListener("click", function () {
+        Array.prototype.forEach.call(box.children, function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
+        fn(b.dataset.v);
+      });
+    });
+  }
+  bindPicks("sideP", function (v) { human = v; newGame(); });
+  bindPicks("lvlP", function (v) { level = parseInt(v, 10); });
+  newBtn.addEventListener("click", newGame);
+  flipBtn.addEventListener("click", function () { flipped = !flipped; drawPlay(); });
+  document.getElementById("playNow").addEventListener("click", function () { document.querySelector('[data-tab="play"]').click(); });
+  newGame();
+
+  function setLang(l) {
+    LANG = l;
+    try { localStorage.setItem("cs-lang", l); } catch (e) {}
+    document.documentElement.lang = l === "ur" ? "ur-Latn" : "en";
+    document.title = tl("title");
+    applyStatic();
+    Array.prototype.forEach.call(document.querySelectorAll(".lg"), function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-lang") === l ? "true" : "false");
+    });
+    drawMoves(); showQ(); drawPlay(); renderLog();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".lg"), function (b) {
+    b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
+  });
+  setLang(LANG);
+
+})();
+</script>
+
+</body></html>
